@@ -1,15 +1,4 @@
-import { signIn } from "@/lib/auth";
-import { Button } from "./ui/button";
-
+import Link from "next/link";
 export default function SignIn() {
-  const handleSignIn = async () => {
-    "use server";
-    await signIn("google");
-  };
-
-  return (
-    <form action={handleSignIn}>
-      <Button type="submit">Signin with Google</Button>
-    </form>
-  );
+  return <Link href="/login">Login</Link>;
 }

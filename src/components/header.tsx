@@ -1,6 +1,7 @@
 import { auth, signOut } from "@/lib/auth";
 import { Button } from "./ui/button";
 import { User, LogOut } from "lucide-react";
+import Link from "next/link";
 import SignIn from "./sign-in";
 
 export default async function Header() {
@@ -11,11 +12,15 @@ export default async function Header() {
     await signOut();
   };
 
+  console.log(">>>>> HEADER >>>>> session: ", session);
+
   return (
     <header className="border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
         <div className="flex items-center space-x-2">
-          <h1 className="text-xl font-semibold">LilyGem</h1>
+          <h1 className="text-xl font-semibold">
+            <Link href="/">LilyGem</Link>
+          </h1>
         </div>
 
         <div className="flex items-center space-x-4">

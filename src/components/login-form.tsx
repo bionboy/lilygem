@@ -4,9 +4,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { signIn } from "@/lib/auth";
 
 export function LoginForm({ className, ...props }: React.ComponentProps<"div">) {
-  const handleSignIn = async () => {
+  const handleGoogleLogin = async () => {
     "use server";
     await signIn("google");
+    // TODO: // await signIn("google", { redirectTo: "/dashboard" });
   };
 
   return (
@@ -20,7 +21,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
           {/* <form> */}
           <div className="grid gap-6">
             <div className="flex flex-col gap-4">
-              <form action={handleSignIn}>
+              <form action={handleGoogleLogin}>
                 <Button variant="outline" className="w-full">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                     <path

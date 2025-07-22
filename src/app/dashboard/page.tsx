@@ -55,8 +55,11 @@ export default function DashboardPage() {
   const fetchExchangeRate = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`https://api.exchangerate-api.com/v4/latest/${fromCurrency}`);
+      const response = await fetch(`/api/exchange-rate?base=${fromCurrency}&symbols=${toCurrency}`);
       const data = await response.json();
+      if (data.error) {
+        throw new Error(data.error);
+      }
       setExchangeRate(data.rates[toCurrency]);
     } catch (error) {
       console.error("Error fetching exchange rate:", error);
@@ -70,48 +73,17 @@ export default function DashboardPage() {
   const fetchHistoricalData = async () => {
     setChartLoading(true);
     try {
-      // Get dates for the last 30 days
-      const dates = [];
-      const today = new Date();
-      for (let i = 29; i >= 0; i--) {
-        const date = new Date(today);
-        date.setDate(date.getDate() - i);
-        dates.push(date.toISOString().split("T")[0]);
+      const response = await fetch(
+        `/api/exchange-rate/history?base=${fromCurrency}&symbols=${toCurrency}&days=7`
+      );
+      const data = await response.json();
+
+      if (data.error) {
+        throw new Error(data.error);
       }
 
-      // Fetch historical data for each date
-      const historicalData = [];
-      for (const date of dates) {
-        try {
-          const response = await fetch(
-            `https://api.exchangerate-api.com/v4/${date}?base=${fromCurrency}&symbols=${toCurrency}`
-          );
-          const data = await response.json();
-          historicalData.push({
-            date: new Date(date).toLocaleDateString("en-US", { month: "short", day: "numeric" }),
-            rate: data.rates[toCurrency],
-          });
-        } catch (error) {
-          // Skip failed requests
-          continue;
-        }
-      }
-
-      setChartData(historicalData);
+      setChartData(data.data);
     } catch (error) {
-      console.error("Error fetching historical data:", error);
-      // Generate mock data for demo
-      const mockData = [];
-      const today = new Date();
-      for (let i = 29; i >= 0; i--) {
-        const date = new Date(today);
-        date.setDate(date.getDate() - i);
-        mockData.push({
-          date: date.toLocaleDateString("en-US", { month: "short", day: "numeric" }),
-          rate: 1.35 + (Math.random() - 0.5) * 0.1, // Random rate around 1.35
-        });
-      }
-      setChartData(mockData);
     } finally {
       setChartLoading(false);
     }
@@ -212,7 +184,6 @@ export default function DashboardPage() {
                   value={toAmount}
                   onChange={(e) => handleToAmountChange(e.target.value)}
                   className="text-lg"
-                  readOnly={!fromAmount}
                 />
               </div>
             </div>
@@ -233,7 +204,7 @@ export default function DashboardPage() {
         {fromCurrency !== toCurrency && (
           <Card className="mt-6">
             <CardHeader>
-              <CardTitle>Exchange Rate History (Last 30 Days)</CardTitle>
+              <CardTitle>Exchange Rate History (Last 7 Days)</CardTitle>
             </CardHeader>
             <CardContent>
               {chartLoading ? (

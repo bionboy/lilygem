@@ -12,8 +12,6 @@ export default async function Header() {
     await signOut();
   };
 
-  console.log(">>>>> HEADER >>>>> session: ", session);
-
   return (
     <header className="border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
@@ -21,6 +19,16 @@ export default async function Header() {
           <h1 className="text-xl font-semibold">
             <Link href="/">LilyGem</Link>
           </h1>
+          {session?.user && (
+            <nav className="ml-6">
+              <Link
+                href="/dashboard"
+                className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
+              >
+                Dashboard
+              </Link>
+            </nav>
+          )}
         </div>
 
         <div className="flex items-center space-x-4">

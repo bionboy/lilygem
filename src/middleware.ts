@@ -14,9 +14,9 @@ export default auth((request: NextAuthRequest) => {
     return Response.redirect(newUrl);
   }
 
-  // Redirect logged-in users away from login page
+  // Redirect logged-in users away from login page to dashboard
   if (isLoggedIn && nextUrl.pathname === "/login") {
-    const newUrl = new URL("/", nextUrl.origin);
+    const newUrl = new URL("/dashboard", nextUrl.origin);
     return NextResponse.redirect(newUrl);
   }
 });

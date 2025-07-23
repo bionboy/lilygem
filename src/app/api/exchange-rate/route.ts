@@ -103,7 +103,7 @@ export async function GET(request: NextRequest) {
       }
       acc[pair.date].rates[pair.target_currency] = pair.rate;
       return acc;
-    }, {} as Record<string, any>);
+    }, {} as Record<string, { date: string; base: string; rates: Record<string, number> }>);
 
     const rates = Object.values(ratesByDate);
 

@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { auth } from "@/lib/auth";
 import Link from "next/link";
 
@@ -6,23 +7,104 @@ export default async function Home() {
   const session = await auth();
 
   return (
-    <div className="flex justify-center items-center h-screen">
-      {session?.user ? (
-        <div className="text-center">
-          <h1 className="text-2xl font-bold mb-4">Welcome to LilyGem!</h1>
-          <p className="mb-4">Hello {session?.user?.name}</p>
-          <Button asChild>
-            <Link href="/dashboard">Go to Dashboard</Link>
-          </Button>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+      {/* Hero Section */}
+      <div className="relative overflow-hidden">
+        {/* Background decoration */}
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 to-purple-600/10"></div>
+        <div className="absolute top-0 left-0 w-72 h-72 bg-blue-400/20 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
+        <div className="absolute top-0 right-0 w-72 h-72 bg-purple-400/20 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2"></div>
+
+        <div className="relative z-10 container mx-auto px-4 py-16">
+          <div className="text-center max-w-4xl mx-auto">
+            {/* Main heading */}
+            <h1 className="text-5xl md:text-7xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 bg-clip-text text-transparent mb-6 leading-tight">
+              LilyGem
+            </h1>
+
+            <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto">
+              Your personal finance companion for tracking expenses and managing currency
+              conversions
+            </p>
+
+            {/* CTA Section */}
+            {session?.user ? (
+              <div className="space-y-6">
+                <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-xl border border-white/20">
+                  <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-2">
+                    Welcome back, {session.user.name}! 👋
+                  </h2>
+                  <p className="text-gray-600 dark:text-gray-400 mb-6">
+                    Ready to continue managing your finances?
+                  </p>
+                  <Button
+                    asChild
+                    size="lg"
+                    className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+                  >
+                    <Link href="/dashboard">Go to Dashboard</Link>
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-6">
+                <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-xl border border-white/20">
+                  <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-2">
+                    Get Started Today
+                  </h2>
+                  <p className="text-gray-600 dark:text-gray-400 mb-6">
+                    Sign in to start tracking your expenses and managing currency conversions
+                  </p>
+                  <Button
+                    asChild
+                    size="lg"
+                    className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+                  >
+                    <Link href="/login">Sign In</Link>
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
-      ) : (
-        <div className="text-center">
-          <h1 className="text-2xl font-bold mb-4">Welcome to LilyGem!</h1>
-          <p className="mb-4">
-            <span className="font-bold">Hey!</span> Go ahead and sign in
-          </p>
+      </div>
+
+      {/* Features Section */}
+      <div className="container mx-auto px-4 py-16">
+        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          <Card className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm border-white/20 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
+            <CardHeader>
+              <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center mb-4">
+                <span className="text-2xl">💰</span>
+              </div>
+              <CardTitle className="text-xl">Expense Tracking</CardTitle>
+              <CardDescription>Keep track of your daily expenses with ease</CardDescription>
+            </CardHeader>
+          </Card>
+
+          <Card className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm border-white/20 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
+            <CardHeader>
+              <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex items-center justify-center mb-4">
+                <span className="text-2xl">🌍</span>
+              </div>
+              <CardTitle className="text-xl">Currency Conversion</CardTitle>
+              <CardDescription>
+                Real-time exchange rates and currency conversion tools
+              </CardDescription>
+            </CardHeader>
+          </Card>
+
+          <Card className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm border-white/20 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
+            <CardHeader>
+              <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-xl flex items-center justify-center mb-4">
+                <span className="text-2xl">📊</span>
+              </div>
+              <CardTitle className="text-xl">Analytics</CardTitle>
+              <CardDescription>Visual insights into your spending patterns</CardDescription>
+            </CardHeader>
+          </Card>
         </div>
-      )}
+      </div>
     </div>
   );
 }

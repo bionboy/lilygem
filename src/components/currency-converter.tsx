@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -30,26 +30,7 @@ export default function CurrencyConverter({
   const [exchangeRate, setExchangeRate] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
 
-  // Fetch exchange rate when currencies change
-  useEffect(() => {
-    if (fromCurrency && toCurrency && fromCurrency !== toCurrency) {
-      fetchExchangeRate();
-    } else if (fromCurrency === toCurrency) {
-      setExchangeRate(1);
-    }
-  }, [fromCurrency, toCurrency]);
-
-  // Update converted amount when rate or fromAmount changes
-  useEffect(() => {
-    if (exchangeRate && fromAmount) {
-      const converted = parseFloat(fromAmount) * exchangeRate;
-      setToAmount(converted.toFixed(2));
-    } else {
-      setToAmount("");
-    }
-  }, [exchangeRate, fromAmount]);
-
-  const fetchExchangeRate = async () => {
+  const fetchExchangeRate = useCallback(async () => {
     setLoading(true);
     try {
       // Get today's rate using enhanced API
@@ -71,11 +52,26 @@ export default function CurrencyConverter({
     } finally {
       setLoading(false);
     }
-  };
+  }, [fromCurrency, toCurrency]);
 
-  const handleFromAmountChange = (value: string) => {
-    setFromAmount(value);
-  };
+  // Fetch exchange rate when currencies change
+  useEffect(() => {
+    if (fromCurrency && toCurrency && fromCurrency !== toCurrency) {
+      fetchExchangeRate();
+    } else if (fromCurrency === toCurrency) {
+      setExchangeRate(1);
+    }
+  }, [fromCurrency, toCurrency, fetchExchangeRate]);
+
+  // Update converted amount when rate or fromAmount changes
+  useEffect(() => {
+    if (exchangeRate && fromAmount) {
+      const converted = parseFloat(fromAmount) * exchangeRate;
+      setToAmount(converted.toFixed(2));
+    } else {
+      setToAmount("");
+    }
+  }, [exchangeRate, fromAmount]);
 
   const handleToAmountChange = (value: string) => {
     setToAmount(value);
@@ -87,10 +83,10 @@ export default function CurrencyConverter({
     }
   };
 
-  const swapCurrencies = () => {
+  const swapCurrencies = useCallback(() => {
     onFromCurrencyChange(toCurrency);
     onToCurrencyChange(fromCurrency);
-  };
+  }, [fromCurrency, toCurrency, onFromCurrencyChange, onToCurrencyChange]);
 
   return (
     <Card>
@@ -149,7 +145,7 @@ export default function CurrencyConverter({
               type="number"
               placeholder="0.00"
               value={fromAmount}
-              onChange={(e) => handleFromAmountChange(e.target.value)}
+              onChange={(e) => setFromAmount(e.target.value)}
               className="text-lg"
             />
           </div>

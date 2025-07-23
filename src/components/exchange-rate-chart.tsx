@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -26,8 +26,18 @@ interface ExchangeRateChartProps {
   toCurrency: string;
 }
 
+interface ChartDataPoint {
+  date: string;
+  rate: number;
+}
+
+interface RateData {
+  date: string;
+  rates: Record<string, number>;
+}
+
 export default function ExchangeRateChart({ fromCurrency, toCurrency }: ExchangeRateChartProps) {
-  const [chartData, setChartData] = useState<any[]>([]);
+  const [chartData, setChartData] = useState<ChartDataPoint[]>([]);
   const [chartLoading, setChartLoading] = useState(false);
   const [dateRange, setDateRange] = useState("7");
   const [customStartDate, setCustomStartDate] = useState("");
@@ -41,31 +51,18 @@ export default function ExchangeRateChart({ fromCurrency, toCurrency }: Exchange
     setCustomStartDate(sevenDaysAgo);
   }, []);
 
-  // Fetch historical data when currencies or date range changes
-  useEffect(() => {
-    if (fromCurrency && toCurrency && fromCurrency !== toCurrency) {
-      fetchHistoricalData();
-    } else {
-      setChartData([]);
-    }
-  }, [fromCurrency, toCurrency, dateRange, customStartDate, customEndDate]);
-
-  const getDateRange = () => {
-    const endDate = new Date().toISOString().split("T")[0];
-
-    if (dateRange === "custom") {
-      return { startDate: customStartDate, endDate: customEndDate };
-    }
-
-    const days = parseInt(dateRange);
-    const startDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
-    return { startDate, endDate };
-  };
-
-  const fetchHistoricalData = async () => {
+  const fetchHistoricalData = useCallback(async () => {
     setChartLoading(true);
     try {
-      const { startDate, endDate } = getDateRange();
+      const endDate = new Date().toISOString().split("T")[0];
+      let startDate: string;
+
+      if (dateRange === "custom") {
+        startDate = customStartDate;
+      } else {
+        const days = parseInt(dateRange);
+        startDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
+      }
 
       const response = await fetch(
         `/api/exchange-rate?startDate=${startDate}&endDate=${endDate}&base=${fromCurrency}&symbols=${toCurrency}`
@@ -77,7 +74,7 @@ export default function ExchangeRateChart({ fromCurrency, toCurrency }: Exchange
       }
 
       // Transform data for the chart
-      const chartData = data.rates.map((rate: any) => ({
+      const chartData = data.rates.map((rate: RateData) => ({
         date: rate.date,
         rate: rate.rates[toCurrency],
       }));
@@ -89,7 +86,16 @@ export default function ExchangeRateChart({ fromCurrency, toCurrency }: Exchange
     } finally {
       setChartLoading(false);
     }
-  };
+  }, [fromCurrency, toCurrency, dateRange, customStartDate]);
+
+  // Fetch historical data when currencies or date range changes
+  useEffect(() => {
+    if (fromCurrency && toCurrency && fromCurrency !== toCurrency) {
+      fetchHistoricalData();
+    } else {
+      setChartData([]);
+    }
+  }, [fromCurrency, toCurrency, dateRange, customStartDate, customEndDate, fetchHistoricalData]);
 
   const getChartTitle = () => {
     if (dateRange === "custom") {

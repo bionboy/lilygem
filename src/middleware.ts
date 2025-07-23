@@ -19,6 +19,8 @@ export default auth((request: NextAuthRequest) => {
     const newUrl = new URL("/dashboard", nextUrl.origin);
     return NextResponse.redirect(newUrl);
   }
+
+  // TODO (@bionboy, 25-07-23): reject all other requests that are not logged-in or authenticated (like to the api endpoints and etc.)
 });
 
 export const config = { matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"] };

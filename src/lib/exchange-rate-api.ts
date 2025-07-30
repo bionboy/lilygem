@@ -40,7 +40,9 @@ export const fetchLatestRates = async (baseCurrency: string) => {
 };
 
 export const fetchHistoricalRates = async (baseCurrency: string, date: string) => {
-  const [year, month, day] = date.split("-");
-  const url = `history/${baseCurrency}/${year}/${month}/${day}`;
-  return fetchExchangeRate(url);
+  // TODO: remove this if I find a solution
+  console.debug("Skipping historical rates for now, this is a paid feature");
+  // const [year, month, day] = date.split("-");
+  // const url = `history/${baseCurrency}/${year}/${month}/${day}`;
+  // return fetchExchangeRate(url);
 };

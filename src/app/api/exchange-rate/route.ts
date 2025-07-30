@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase";
 import { fetchHistoricalRates, fetchLatestRates } from "@/lib/exchange-rate-api";
+import { DateTime } from "luxon";
+import { getCurrentUTCDate } from "@/lib/utils/time";
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -33,25 +35,28 @@ export async function GET(request: NextRequest) {
     const existingDates = new Set(existingPairs?.map((pair) => pair.date) || []);
     const missingDates = [];
 
-    const currentDate = new Date(startDate);
-    const endDateTime = new Date(endDate);
+    let currentDate = DateTime.fromISO(startDate);
+    const endDateTime = DateTime.fromISO(endDate);
 
     while (currentDate <= endDateTime) {
-      const dateStr = currentDate.toISOString().split("T")[0];
+      const dateStr = currentDate.toISODate();
       if (!existingDates.has(dateStr)) {
         missingDates.push(dateStr);
       }
-      currentDate.setDate(currentDate.getDate() + 1);
+      currentDate = currentDate.plus({ days: 1 });
     }
 
     // 3. Fetch missing data from external API
     const fetchedPairs = [];
     for (const date of missingDates) {
+      if (!date) {
+        continue;
+      }
       try {
         let data;
 
         // Use latest rates API for today's date, historical API for past dates
-        const today = new Date().toISOString().split("T")[0];
+        const today = getCurrentUTCDate();
         if (date === today) {
           data = await fetchLatestRates(base);
           // Transform latest rates data to match historical format
@@ -62,6 +67,10 @@ export async function GET(request: NextRequest) {
           };
         } else {
           data = await fetchHistoricalRates(base, date);
+        }
+
+        if (!data) {
+          continue;
         }
 
         // Convert to pairs and store

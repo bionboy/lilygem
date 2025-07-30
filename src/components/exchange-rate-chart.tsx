@@ -16,21 +16,11 @@ import {
 } from "recharts";
 import { DateTime } from "luxon";
 import { dateToDisplay } from "@/lib/utils/time";
-import { useExchangeRate } from "@/lib/hooks";
+import { useExchangeRateData, ExchangeRateData } from "@/lib/hooks";
 
 interface ExchangeRateChartProps {
   fromCurrency: string;
   toCurrency: string;
-}
-
-interface ChartDataPoint {
-  date: string;
-  rate: number;
-}
-
-interface RateData {
-  date: string;
-  rates: Record<string, number>;
 }
 
 const dateRangeOptions = [
@@ -55,12 +45,13 @@ export default function ExchangeRateChart({ fromCurrency, toCurrency }: Exchange
 
   // Calculate date range based on selected option
   const { startDate, endDate } = useMemo(() => {
-    const endDate = dates.today;
+    let endDate = dates.today;
     let startDate = dates.thirtyDaysAgo;
 
     switch (dateRangeOption) {
       case "custom":
         startDate = customStartDate;
+        endDate = customEndDate;
         break;
       case "7":
         startDate = dates.sevenDaysAgo;
@@ -79,7 +70,7 @@ export default function ExchangeRateChart({ fromCurrency, toCurrency }: Exchange
   }, [dateRangeOption, customStartDate, customEndDate]);
 
   // Use React Query to fetch data
-  const { data, isLoading, error } = useExchangeRate({
+  const { data, isLoading, error } = useExchangeRateData({
     startDate,
     endDate,
     fromCurrency,
@@ -90,7 +81,7 @@ export default function ExchangeRateChart({ fromCurrency, toCurrency }: Exchange
   const chartData = useMemo(() => {
     if (!data?.rates) return [];
 
-    return data.rates.map((rate: RateData) => ({
+    return data.rates.map((rate: ExchangeRateData) => ({
       date: DateTime.fromISO(rate.date).toLocal().toISODate(),
       rate: rate.rates[toCurrency],
     }));

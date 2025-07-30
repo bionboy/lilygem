@@ -39,6 +39,7 @@ export const fetchLatestRates = async (baseCurrency: string) => {
   return fetchExchangeRate(url);
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const fetchHistoricalRates = async (baseCurrency: string, date: string) => {
   // TODO: remove this if I find a solution
   console.debug("Skipping historical rates for now, this is a paid feature");

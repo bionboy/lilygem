@@ -1,1 +1,1 @@
-export { useExchangeRateData as useExchangeRate } from "./use-exchange-rate";
+export * from "./use-exchange-rate";

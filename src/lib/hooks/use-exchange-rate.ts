@@ -8,13 +8,13 @@ interface ExchangeRateParams {
   toCurrency: string;
 }
 
-interface RateData {
+export interface ExchangeRateData {
   date: string;
   rates: Record<string, number>;
 }
 
 interface ExchangeRateResponse {
-  rates: RateData[];
+  rates: ExchangeRateData[];
   error?: string;
 }
 

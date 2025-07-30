@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase";
 import { fetchLatestRates } from "@/lib/exchange-rate-api";
+import { getCurrentUTCDate } from "@/lib/utils/time";
 
 export async function GET(request: NextRequest) {
   // Verify this is a legitimate cron request
@@ -9,7 +10,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const today = new Date().toISOString().split("T")[0];
+  const today = getCurrentUTCDate();
   const baseCurrencies = ["USD", "CAD"]; // Add more base currencies here as needed
 
   try {
@@ -24,7 +25,9 @@ export async function GET(request: NextRequest) {
 
         // Fetch latest rates from external API to get all available currencies
         const latestRates = await fetchLatestRates(baseCurrency);
-        const targetCurrencies = Object.keys(latestRates.conversion_rates);
+        const targetCurrencies = Object.keys(latestRates.conversion_rates).filter(
+          (currency) => currency !== baseCurrency
+        );
 
         // Check what rates we already have for today
         const { data: existingRates, error: dbError } = await supabaseAdmin
@@ -69,7 +72,7 @@ export async function GET(request: NextRequest) {
           base_currency: baseCurrency,
           target_currency: currency,
           rate: latestRates.conversion_rates[currency],
-          created_at: new Date().toISOString(),
+          created_at: today,
         }));
 
         // Store in database

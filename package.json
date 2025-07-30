@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "shadcn": "pnpm dlx shadcn@latest add"
+    "shadcn": "pnpm dlx shadcn@latest add",
+    "cron": "source .env.local && curl -X GET \"http://localhost:3000/api/cron/exchange-rates\" -H \"Authorization: Bearer $CRON_SECRET\""
   },
   "dependencies": {
     "@radix-ui/react-label": "^2.1.7",
@@ -16,6 +17,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.525.0",
+    "luxon": "^3.7.1",
     "next": "15.4.2",
     "next-auth": "5.0.0-beta.29",
     "react": "19.1.0",
@@ -26,6 +28,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
+    "@types/luxon": "^3.7.1",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

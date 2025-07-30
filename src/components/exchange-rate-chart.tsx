@@ -14,12 +14,23 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import { DateTime } from "luxon";
+import { dateToDisplay } from "@/lib/utils/time";
 
 const dateRangeOptions = [
   { label: "Last 7 days", value: "7" },
   { label: "Last 30 days", value: "30" },
+  { label: "Last 60 days", value: "60" },
   { label: "Custom range", value: "custom" },
-];
+] as const;
+type DateRangeOption = (typeof dateRangeOptions)[number]["value"];
+
+const dates = {
+  today: DateTime.now(),
+  sevenDaysAgo: DateTime.now().minus({ days: 7 }),
+  thirtyDaysAgo: DateTime.now().minus({ days: 30 }),
+  sixtyDaysAgo: DateTime.now().minus({ days: 60 }),
+} as const;
 
 interface ExchangeRateChartProps {
   fromCurrency: string;
@@ -36,49 +47,78 @@ interface RateData {
   rates: Record<string, number>;
 }
 
+// Simple cache object
+const chartDataCache: Record<string, ChartDataPoint[]> = {};
+
+const fetchExchangeRateData = async (
+  startDate: DateTime<true>,
+  endDate: DateTime<true>,
+  fromCurrency: string,
+  toCurrency: string
+) => {
+  const params = {
+    startDate: startDate.toUTC().toISODate(),
+    endDate: endDate.toUTC().toISODate(),
+    base: fromCurrency,
+    symbols: toCurrency,
+  };
+  const queryString = new URLSearchParams(params).toString();
+  const response = await fetch(`/api/exchange-rate?${queryString}`);
+  const data = await response.json();
+  if (data.error) {
+    throw new Error(data.error);
+  }
+  return data;
+};
+
 export default function ExchangeRateChart({ fromCurrency, toCurrency }: ExchangeRateChartProps) {
   const [chartData, setChartData] = useState<ChartDataPoint[]>([]);
   const [chartLoading, setChartLoading] = useState(false);
-  const [dateRange, setDateRange] = useState("7");
-  const [customStartDate, setCustomStartDate] = useState("");
-  const [customEndDate, setCustomEndDate] = useState("");
-
-  // Set default custom dates when component mounts
-  useEffect(() => {
-    const today = new Date().toISOString().split("T")[0];
-    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
-    setCustomEndDate(today);
-    setCustomStartDate(sevenDaysAgo);
-  }, []);
+  const [dateRangeOption, setDateRangeOption] = useState<DateRangeOption>("30");
+  const [customStartDate, setCustomStartDate] = useState<DateTime>(dates.thirtyDaysAgo);
+  const [customEndDate, setCustomEndDate] = useState<DateTime>(dates.today);
 
   const fetchHistoricalData = useCallback(async () => {
+    const cacheKey = `${fromCurrency}-${toCurrency}-${dateRangeOption}`;
+
+    // Check cache first
+    if (chartDataCache[cacheKey]) {
+      setChartData(chartDataCache[cacheKey]);
+      return;
+    }
+
     setChartLoading(true);
     try {
-      const endDate = new Date().toISOString().split("T")[0];
-      let startDate: string;
+      const endDate = dates.today;
+      let startDate = dates.thirtyDaysAgo;
 
-      if (dateRange === "custom") {
-        startDate = customStartDate;
-      } else {
-        const days = parseInt(dateRange);
-        startDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
+      switch (dateRangeOption) {
+        case "custom":
+          startDate = customStartDate;
+          break;
+        case "7":
+          startDate = dates.sevenDaysAgo;
+          break;
+        case "30":
+          startDate = dates.thirtyDaysAgo;
+          break;
+        case "60":
+          startDate = dates.sixtyDaysAgo;
+          break;
+        default:
+          throw new Error(`Invalid date range: ${dateRangeOption}`);
       }
 
-      const response = await fetch(
-        `/api/exchange-rate?startDate=${startDate}&endDate=${endDate}&base=${fromCurrency}&symbols=${toCurrency}`
-      );
-      const data = await response.json();
+      const data = await fetchExchangeRateData(startDate, endDate, fromCurrency, toCurrency);
 
-      if (data.error) {
-        throw new Error(data.error);
-      }
-
-      // Transform data for the chart
       const chartData = data.rates.map((rate: RateData) => ({
-        date: rate.date,
+        // convert to local time for the chart
+        date: DateTime.fromISO(rate.date).toLocal().toISODate(),
         rate: rate.rates[toCurrency],
       }));
 
+      // Cache the result
+      chartDataCache[cacheKey] = chartData;
       setChartData(chartData);
     } catch (error) {
       console.error("Error fetching historical data:", error);
@@ -86,29 +126,33 @@ export default function ExchangeRateChart({ fromCurrency, toCurrency }: Exchange
     } finally {
       setChartLoading(false);
     }
-  }, [fromCurrency, toCurrency, dateRange, customStartDate]);
+  }, [fromCurrency, toCurrency, dateRangeOption, customStartDate, customEndDate]);
 
   // Fetch historical data when currencies or date range changes
   useEffect(() => {
-    if (fromCurrency && toCurrency && fromCurrency !== toCurrency) {
+    if (fromCurrency && toCurrency) {
       fetchHistoricalData();
     } else {
       setChartData([]);
     }
-  }, [fromCurrency, toCurrency, dateRange, customStartDate, customEndDate, fetchHistoricalData]);
+  }, [
+    fromCurrency,
+    toCurrency,
+    dateRangeOption,
+    customStartDate,
+    customEndDate,
+    fetchHistoricalData,
+  ]);
 
   const getChartTitle = () => {
-    if (dateRange === "custom") {
-      return `Exchange Rate History (${customStartDate} to ${customEndDate})`;
+    if (dateRangeOption === "custom") {
+      return `Exchange Rate History (${dateToDisplay(customStartDate)} to ${dateToDisplay(
+        customEndDate
+      )})`;
     }
-    const days = parseInt(dateRange);
+    const days = parseInt(dateRangeOption);
     return `Exchange Rate History (Last ${days} days)`;
   };
-
-  // Don't render if currencies are the same
-  if (fromCurrency === toCurrency) {
-    return null;
-  }
 
   return (
     <Card className="mt-6">
@@ -122,25 +166,25 @@ export default function ExchangeRateChart({ fromCurrency, toCurrency }: Exchange
             {dateRangeOptions.map((option) => (
               <Button
                 key={option.value}
-                variant={dateRange === option.value ? "default" : "outline"}
+                variant={dateRangeOption === option.value ? "default" : "outline"}
                 size="sm"
-                onClick={() => setDateRange(option.value)}
+                onClick={() => setDateRangeOption(option.value)}
               >
                 {option.label}
               </Button>
             ))}
           </div>
 
-          {dateRange === "custom" && (
+          {dateRangeOption === "custom" && (
             <div className="flex gap-4 items-end">
               <div className="space-y-2">
                 <Label htmlFor="start-date">Start Date</Label>
                 <Input
                   id="start-date"
                   type="date"
-                  value={customStartDate}
-                  onChange={(e) => setCustomStartDate(e.target.value)}
-                  max={customEndDate}
+                  value={dateToDisplay(customStartDate)}
+                  onChange={(e) => setCustomStartDate(DateTime.fromISO(e.target.value))}
+                  max={dateToDisplay(customEndDate)}
                 />
               </div>
               <div className="space-y-2">
@@ -148,10 +192,10 @@ export default function ExchangeRateChart({ fromCurrency, toCurrency }: Exchange
                 <Input
                   id="end-date"
                   type="date"
-                  value={customEndDate}
-                  onChange={(e) => setCustomEndDate(e.target.value)}
-                  min={customStartDate}
-                  max={new Date().toISOString().split("T")[0]}
+                  value={dateToDisplay(customEndDate)}
+                  onChange={(e) => setCustomEndDate(DateTime.fromISO(e.target.value))}
+                  min={dateToDisplay(customStartDate)}
+                  max={dateToDisplay(dates.today)}
                 />
               </div>
             </div>
@@ -167,7 +211,12 @@ export default function ExchangeRateChart({ fromCurrency, toCurrency }: Exchange
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={chartData}>
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="date" tick={{ fontSize: 12 }} interval="preserveStartEnd" />
+                <XAxis
+                  dataKey="date"
+                  tick={{ fontSize: 12 }}
+                  interval="preserveStartEnd"
+                  tickFormatter={(value) => DateTime.fromISO(value).toFormat("MM/dd")}
+                />
                 <YAxis
                   domain={["dataMin - 0.01", "dataMax + 0.01"]}
                   tick={{ fontSize: 12 }}

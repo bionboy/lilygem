@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,6 +16,7 @@ import {
 } from "recharts";
 import { DateTime } from "luxon";
 import { dateToDisplay } from "@/lib/utils/time";
+import { useExchangeRate } from "@/lib/hooks";
 
 interface ExchangeRateChartProps {
   fromCurrency: string;
@@ -47,103 +48,53 @@ const dates = {
   sixtyDaysAgo: DateTime.now().minus({ days: 60 }),
 } as const;
 
-const chartDataCache: Record<string, ChartDataPoint[]> = {};
-
-const fetchExchangeRateData = async (
-  startDate: DateTime<true>,
-  endDate: DateTime<true>,
-  fromCurrency: string,
-  toCurrency: string
-) => {
-  const params = {
-    startDate: startDate.toUTC().toISODate(),
-    endDate: endDate.toUTC().toISODate(),
-    base: fromCurrency,
-    symbols: toCurrency,
-  };
-  const queryString = new URLSearchParams(params).toString();
-  const response = await fetch(`/api/exchange-rate?${queryString}`);
-  const data = await response.json();
-  if (data.error) {
-    throw new Error(data.error);
-  }
-  return data;
-};
-
 export default function ExchangeRateChart({ fromCurrency, toCurrency }: ExchangeRateChartProps) {
-  const [chartData, setChartData] = useState<ChartDataPoint[]>([]);
-  const [chartLoading, setChartLoading] = useState(false);
   const [dateRangeOption, setDateRangeOption] = useState<DateRangeOption>("30");
   const [customStartDate, setCustomStartDate] = useState<DateTime>(dates.thirtyDaysAgo);
   const [customEndDate, setCustomEndDate] = useState<DateTime>(dates.today);
 
-  const fetchHistoricalData = useCallback(async () => {
-    // Caching
-    let cacheKey = `${fromCurrency}-${toCurrency}-${dateRangeOption}`;
-    if (dateRangeOption === "custom") {
-      cacheKey += `-${customStartDate.toISODate()}-${customEndDate.toISODate()}`;
+  // Calculate date range based on selected option
+  const { startDate, endDate } = useMemo(() => {
+    const endDate = dates.today;
+    let startDate = dates.thirtyDaysAgo;
+
+    switch (dateRangeOption) {
+      case "custom":
+        startDate = customStartDate;
+        break;
+      case "7":
+        startDate = dates.sevenDaysAgo;
+        break;
+      case "30":
+        startDate = dates.thirtyDaysAgo;
+        break;
+      case "60":
+        startDate = dates.sixtyDaysAgo;
+        break;
+      default:
+        startDate = dates.thirtyDaysAgo;
     }
-    if (chartDataCache[cacheKey]) {
-      setChartData(chartDataCache[cacheKey]);
-      return;
-    }
 
-    setChartLoading(true);
-    try {
-      const endDate = dates.today;
-      let startDate = dates.thirtyDaysAgo;
+    return { startDate, endDate };
+  }, [dateRangeOption, customStartDate, customEndDate]);
 
-      switch (dateRangeOption) {
-        case "custom":
-          startDate = customStartDate;
-          break;
-        case "7":
-          startDate = dates.sevenDaysAgo;
-          break;
-        case "30":
-          startDate = dates.thirtyDaysAgo;
-          break;
-        case "60":
-          startDate = dates.sixtyDaysAgo;
-          break;
-        default:
-          throw new Error(`Invalid date range: ${dateRangeOption}`);
-      }
-
-      const data = await fetchExchangeRateData(startDate, endDate, fromCurrency, toCurrency);
-
-      const chartData = data.rates.map((rate: RateData) => ({
-        // convert to local time for the chart
-        date: DateTime.fromISO(rate.date).toLocal().toISODate(),
-        rate: rate.rates[toCurrency],
-      }));
-
-      // Cache the result
-      chartDataCache[cacheKey] = chartData;
-      setChartData(chartData);
-    } catch (error) {
-      console.error("Error fetching historical data:", error);
-      setChartData([]);
-    } finally {
-      setChartLoading(false);
-    }
-  }, [fromCurrency, toCurrency, dateRangeOption, customStartDate, customEndDate]);
-
-  // Fetch historical data when currencies or date range changes
-  useEffect(() => {
-    if (fromCurrency && toCurrency) {
-      fetchHistoricalData();
-    } else {
-      setChartData([]);
-    }
-  }, [
+  // Use React Query to fetch data
+  const { data, isLoading, error } = useExchangeRate({
+    startDate,
+    endDate,
     fromCurrency,
     toCurrency,
-    dateRangeOption,
-    customStartDate,
-    customEndDate,
-    fetchHistoricalData,
-  ]);
+  });
+
+  // Transform data for chart
+  const chartData = useMemo(() => {
+    if (!data?.rates) return [];
+
+    return data.rates.map((rate: RateData) => ({
+      date: DateTime.fromISO(rate.date).toLocal().toISODate(),
+      rate: rate.rates[toCurrency],
+    }));
+  }, [data, toCurrency]);
 
   const chartTitle = useMemo(() => {
     if (dateRangeOption === "custom") {
@@ -203,9 +154,13 @@ export default function ExchangeRateChart({ fromCurrency, toCurrency }: Exchange
           )}
         </div>
 
-        {chartLoading ? (
+        {isLoading ? (
           <div className="flex justify-center items-center h-64">
             <p className="text-gray-500">Loading chart data...</p>
+          </div>
+        ) : error ? (
+          <div className="flex justify-center items-center h-64">
+            <p className="text-red-500">Error loading chart data</p>
           </div>
         ) : chartData.length > 0 ? (
           <div className="h-64">

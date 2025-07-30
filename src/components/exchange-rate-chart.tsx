@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,21 +17,6 @@ import {
 import { DateTime } from "luxon";
 import { dateToDisplay } from "@/lib/utils/time";
 
-const dateRangeOptions = [
-  { label: "Last 7 days", value: "7" },
-  { label: "Last 30 days", value: "30" },
-  { label: "Last 60 days", value: "60" },
-  { label: "Custom range", value: "custom" },
-] as const;
-type DateRangeOption = (typeof dateRangeOptions)[number]["value"];
-
-const dates = {
-  today: DateTime.now(),
-  sevenDaysAgo: DateTime.now().minus({ days: 7 }),
-  thirtyDaysAgo: DateTime.now().minus({ days: 30 }),
-  sixtyDaysAgo: DateTime.now().minus({ days: 60 }),
-} as const;
-
 interface ExchangeRateChartProps {
   fromCurrency: string;
   toCurrency: string;
@@ -47,7 +32,21 @@ interface RateData {
   rates: Record<string, number>;
 }
 
-// Simple cache object
+const dateRangeOptions = [
+  { label: "Last 7 days", value: "7" },
+  { label: "Last 30 days", value: "30" },
+  { label: "Last 60 days", value: "60" },
+  { label: "Custom range", value: "custom" },
+] as const;
+type DateRangeOption = (typeof dateRangeOptions)[number]["value"];
+
+const dates = {
+  today: DateTime.now(),
+  sevenDaysAgo: DateTime.now().minus({ days: 7 }),
+  thirtyDaysAgo: DateTime.now().minus({ days: 30 }),
+  sixtyDaysAgo: DateTime.now().minus({ days: 60 }),
+} as const;
+
 const chartDataCache: Record<string, ChartDataPoint[]> = {};
 
 const fetchExchangeRateData = async (
@@ -79,9 +78,11 @@ export default function ExchangeRateChart({ fromCurrency, toCurrency }: Exchange
   const [customEndDate, setCustomEndDate] = useState<DateTime>(dates.today);
 
   const fetchHistoricalData = useCallback(async () => {
-    const cacheKey = `${fromCurrency}-${toCurrency}-${dateRangeOption}`;
-
-    // Check cache first
+    // Caching
+    let cacheKey = `${fromCurrency}-${toCurrency}-${dateRangeOption}`;
+    if (dateRangeOption === "custom") {
+      cacheKey += `-${customStartDate.toISODate()}-${customEndDate.toISODate()}`;
+    }
     if (chartDataCache[cacheKey]) {
       setChartData(chartDataCache[cacheKey]);
       return;
@@ -144,7 +145,7 @@ export default function ExchangeRateChart({ fromCurrency, toCurrency }: Exchange
     fetchHistoricalData,
   ]);
 
-  const getChartTitle = () => {
+  const chartTitle = useMemo(() => {
     if (dateRangeOption === "custom") {
       return `Exchange Rate History (${dateToDisplay(customStartDate)} to ${dateToDisplay(
         customEndDate
@@ -152,12 +153,12 @@ export default function ExchangeRateChart({ fromCurrency, toCurrency }: Exchange
     }
     const days = parseInt(dateRangeOption);
     return `Exchange Rate History (Last ${days} days)`;
-  };
+  }, [dateRangeOption, customStartDate, customEndDate]);
 
   return (
     <Card className="mt-6">
       <CardHeader>
-        <CardTitle>{getChartTitle()}</CardTitle>
+        <CardTitle>{chartTitle}</CardTitle>
       </CardHeader>
       <CardContent>
         {/* Date Range Selector */}

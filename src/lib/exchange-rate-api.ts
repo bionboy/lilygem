@@ -5,18 +5,18 @@
 // HISTORICAL API REQUEST FORMAT
 // GET https://v6.exchangerate-api.com/v6/YOUR-API-KEY/history/USD/YEAR/MONTH/DAY
 
-// export const EXCHANGE_RATE_API_BASE = "https://api.exchangerate-api.com/v4";
-// export const EXCHANGE_RATE_API_BASE = "https://v6.exchangerate-api.com/v6";
-export const EXCHANGE_RATE_API_BASE = `https://v6.exchangerate-api.com/v6/${process.env.EXCHANGE_RATE_API_KEY}`;
+const EXCHANGE_RATE_API_BASE = `https://v6.exchangerate-api.com/v6/${process.env.EXCHANGE_RATE_API_KEY}`;
 
-export const getExchangeRateHeaders = () => ({
+const ExchangeRateHeaders = {
   "User-Agent": "Mozilla/5.0 (compatible; LilyGem/1.0)",
   Accept: "application/json",
-});
+  "Accept-Encoding": "gzip, deflate",
+  "Cache-Control": "no-cache",
+} as const;
 
 export const fetchExchangeRate = async (url: string) => {
-  const response = await fetch(url, {
-    headers: getExchangeRateHeaders(),
+  const response = await fetch(`${EXCHANGE_RATE_API_BASE}/${url}`, {
+    headers: ExchangeRateHeaders,
   });
 
   if (!response.ok) {
@@ -35,12 +35,12 @@ export const fetchExchangeRate = async (url: string) => {
 
 // API functions for different use cases
 export const fetchLatestRates = async (baseCurrency: string) => {
-  const url = `${EXCHANGE_RATE_API_BASE}/latest/${baseCurrency}`;
+  const url = `latest/${baseCurrency}`;
   return fetchExchangeRate(url);
 };
 
 export const fetchHistoricalRates = async (baseCurrency: string, date: string) => {
   const [year, month, day] = date.split("-");
-  const url = `${EXCHANGE_RATE_API_BASE}/history/${baseCurrency}/${year}/${month}/${day}`;
+  const url = `history/${baseCurrency}/${year}/${month}/${day}`;
   return fetchExchangeRate(url);
 };

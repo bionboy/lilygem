@@ -78,6 +78,8 @@ export default function ExchangeRateChart({ fromCurrency, toCurrency }: Exchange
   });
 
   // Transform data for chart
+  // TODO (@bionboy, 25-07-31): PERFORMANCE: prefetch 60 days of data and on change of date range option just move the window of what data is shown.
+  // https://github.com/bionboy/lilygem/issues/3
   const chartData = useMemo(() => {
     if (!data?.rates) return [];
 

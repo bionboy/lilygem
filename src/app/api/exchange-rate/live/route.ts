@@ -1,16 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
 import { fetchLatestRates } from "@/lib/exchange-rate-api";
+import { ExchangeRateApiResponse } from "@/lib/types";
 
 // Simple in-memory cache with expiration
 interface CacheEntry {
-  data: any;
+  data: {
+    base: string;
+    rates: Record<string, number>;
+  };
   timestamp: number;
 }
 
 const cache = new Map<string, CacheEntry>();
 const CACHE_DURATION = 3 * 60 * 60 * 1000; // 3 hours in milliseconds
 
-function getCacheKey(base: string, symbols: string): string {
+function getCacheKey(base: string, _symbols: string): string {
   // return `${base}:${symbols}`;
   // only cache on base because API should return rate to all targets
   return `${base}`;
@@ -50,9 +54,6 @@ export async function GET(request: NextRequest) {
     const cacheData = {
       base: data.base_code,
       rates: data.conversion_rates,
-      lastUpdated: data.time_last_update_utc,
-      nextUpdate: data.time_next_update_utc,
-      cached: false,
     };
 
     // Cache the response
@@ -62,6 +63,7 @@ export async function GET(request: NextRequest) {
     });
 
     // Only return a single rate, not all rates
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { rates, ...responseData } = {
       ...cacheData,
       rate: data.conversion_rates?.[target],

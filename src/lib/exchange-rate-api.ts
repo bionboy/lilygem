@@ -1,3 +1,8 @@
+import {
+  ExchangeRateApiResponse,
+  type ExchangeRateApiResponse as ExchangeRateApiResponseType,
+} from "./types/exchange-rate";
+
 // Exchange Rate API configuration and utilities
 
 // LATEST API REQUEST FORMAT
@@ -34,9 +39,12 @@ export const fetchExchangeRate = async (url: string) => {
 };
 
 // API functions for different use cases
-export const fetchLatestRates = async (baseCurrency: string) => {
+export const fetchLatestRates = async (
+  baseCurrency: string
+): Promise<ExchangeRateApiResponseType> => {
   const url = `latest/${baseCurrency}`;
-  return fetchExchangeRate(url);
+  const data = await fetchExchangeRate(url);
+  return ExchangeRateApiResponse.parse(data);
 };
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

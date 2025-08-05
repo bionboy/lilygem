@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { ArrowLeftRight } from "lucide-react";
+import { useLatestExchangeRate } from "@/lib/hooks";
 
 const currencies = [
   { code: "USD", name: "US Dollar" },
@@ -27,41 +28,15 @@ export default function CurrencyConverter({
 }: CurrencyConverterProps) {
   const [fromAmount, setFromAmount] = useState("");
   const [toAmount, setToAmount] = useState("");
-  const [exchangeRate, setExchangeRate] = useState<number | null>(null);
-  const [loading, setLoading] = useState(false);
 
-  const fetchExchangeRate = useCallback(async () => {
-    setLoading(true);
-    try {
-      // Get today's rate using enhanced API
-      const today = new Date().toISOString().split("T")[0];
-      const response = await fetch(
-        `/api/exchange-rate?startDate=${today}&base=${fromCurrency}&symbols=${toCurrency}`
-      );
-      const data = await response.json();
-      if (data.error) {
-        throw new Error(data.error);
-      }
-      // Get the rate from the first (and only) record
-      const rate = data.rates[0]?.rates[toCurrency];
-      setExchangeRate(rate);
-    } catch (error) {
-      console.error("Error fetching exchange rate:", error);
-      // Fallback to a mock rate for demo purposes
-      setExchangeRate(100);
-    } finally {
-      setLoading(false);
-    }
-  }, [fromCurrency, toCurrency]);
-
-  // Fetch exchange rate when currencies change
-  useEffect(() => {
-    if (fromCurrency && toCurrency && fromCurrency !== toCurrency) {
-      fetchExchangeRate();
-    } else if (fromCurrency === toCurrency) {
-      setExchangeRate(1);
-    }
-  }, [fromCurrency, toCurrency, fetchExchangeRate]);
+  const {
+    data: exchangeRate,
+    isLoading,
+    error,
+  } = useLatestExchangeRate({
+    fromCurrency,
+    toCurrency,
+  });
 
   // Update converted amount when rate or fromAmount changes
   useEffect(() => {
@@ -170,7 +145,8 @@ export default function CurrencyConverter({
             <p className="text-sm text-gray-600">
               Exchange Rate: 1 {fromCurrency} = {exchangeRate.toFixed(4)} {toCurrency}
             </p>
-            {loading && <p className="text-xs text-blue-600 mt-1">Updating rate...</p>}
+            {isLoading && <p className="text-xs text-blue-600 mt-1">Updating rate...</p>}
+            {error && <p className="text-xs text-red-600 mt-1">Error loading rate</p>}
           </div>
         )}
       </CardContent>

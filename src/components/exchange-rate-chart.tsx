@@ -13,10 +13,11 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
+  ReferenceLine,
 } from "recharts";
 import { DateTime } from "luxon";
 import { dateToDisplay } from "@/lib/utils/time";
-import { useExchangeRateData, ExchangeRateData } from "@/lib/hooks";
+import { useExchangeRateData, ExchangeRateData, useLatestExchangeRate } from "@/lib/hooks";
 
 interface ExchangeRateChartProps {
   fromCurrency: string;
@@ -69,10 +70,14 @@ export default function ExchangeRateChart({ fromCurrency, toCurrency }: Exchange
     return { startDate, endDate };
   }, [dateRangeOption, customStartDate, customEndDate]);
 
-  // Use React Query to fetch data
-  const { data, isLoading, error } = useExchangeRateData({
+  const rateHistory = useExchangeRateData({
     startDate,
     endDate,
+    fromCurrency,
+    toCurrency,
+  });
+
+  const liveRate = useLatestExchangeRate({
     fromCurrency,
     toCurrency,
   });
@@ -81,13 +86,13 @@ export default function ExchangeRateChart({ fromCurrency, toCurrency }: Exchange
   // TODO (@bionboy, 25-07-31): PERFORMANCE: prefetch 60 days of data and on change of date range option just move the window of what data is shown.
   // https://github.com/bionboy/lilygem/issues/3
   const chartData = useMemo(() => {
-    if (!data?.rates) return [];
+    if (!rateHistory?.data?.rates) return [];
 
-    return data.rates.map((rate: ExchangeRateData) => ({
+    return rateHistory.data.rates.map((rate: ExchangeRateData) => ({
       date: DateTime.fromISO(rate.date).toLocal().toISODate(),
       rate: rate.rates[toCurrency],
     }));
-  }, [data, toCurrency]);
+  }, [rateHistory, toCurrency]);
 
   const chartTitle = useMemo(() => {
     if (dateRangeOption === "custom") {
@@ -147,11 +152,11 @@ export default function ExchangeRateChart({ fromCurrency, toCurrency }: Exchange
           )}
         </div>
 
-        {isLoading ? (
+        {rateHistory.isLoading ? (
           <div className="flex justify-center items-center h-64">
             <p className="text-gray-500">Loading chart data...</p>
           </div>
-        ) : error ? (
+        ) : rateHistory.error ? (
           <div className="flex justify-center items-center h-64">
             <p className="text-red-500">Error loading chart data</p>
           </div>
@@ -163,7 +168,6 @@ export default function ExchangeRateChart({ fromCurrency, toCurrency }: Exchange
                 <XAxis
                   dataKey="date"
                   tick={{ fontSize: 12 }}
-                  interval="preserveStartEnd"
                   tickFormatter={(value) => DateTime.fromISO(value).toFormat("MM/dd")}
                 />
                 <YAxis
@@ -175,6 +179,35 @@ export default function ExchangeRateChart({ fromCurrency, toCurrency }: Exchange
                   formatter={(value: number) => [value.toFixed(4), "Rate"]}
                   labelFormatter={(label) => `Date: ${label}`}
                 />
+                {liveRate.data && (
+                  <ReferenceLine
+                    // <ReferenceDot
+                    x={DateTime.now().toISO()}
+                    y={liveRate.data}
+                    r={6}
+                    fill="transparent"
+                    stroke="orange"
+                    // strokeWidth={2}
+                    // label="Live Rate"
+                    label={{
+                      content: ({ viewBox }) => (
+                        <g>
+                          <text
+                            // @ts-expect-error: viewBox may not have x/y, but we assume Cartesian here
+                            x={viewBox.x + 10}
+                            // @ts-expect-error: viewBox may not have x/y, but we assume Cartesian here
+                            y={viewBox.y - 10}
+                            fill="orange"
+                            fontWeight="bold"
+                          >
+                            Live Rate
+                          </text>
+                        </g>
+                      ),
+                    }}
+                    ifOverflow="extendDomain"
+                  />
+                )}
                 <Line
                   type="monotone"
                   dataKey="rate"
@@ -183,6 +216,7 @@ export default function ExchangeRateChart({ fromCurrency, toCurrency }: Exchange
                   dot={{ fill: "#3b82f6", strokeWidth: 2, r: 3 }}
                   activeDot={{ r: 5, stroke: "#3b82f6", strokeWidth: 2 }}
                 />
+                {/* TODO (@bionboy, 25-08-05): Add reference points or maybe another line for user transactions */}
               </LineChart>
             </ResponsiveContainer>
           </div>

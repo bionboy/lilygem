@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
   const base = searchParams.get("base") || "USD";
   const symbols = searchParams.get("symbols") || "CAD";
   const startDate = searchParams.get("startDate");
-  const endDate = searchParams.get("endDate") || new Date().toISOString().split("T")[0];
+  const endDate = searchParams.get("endDate") || getCurrentUTCDate();
 
   if (!startDate) {
     return NextResponse.json({ error: "startDate is required" }, { status: 400 });

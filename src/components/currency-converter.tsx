@@ -5,6 +5,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { ArrowLeftRight } from "lucide-react";
 import { useLatestExchangeRate } from "@/lib/hooks";
 
@@ -73,18 +80,22 @@ export default function CurrencyConverter({
           {/* From Currency */}
           <div className="space-y-2">
             <Label htmlFor="from-currency">From</Label>
-            <select
-              id="from-currency"
-              value={fromCurrency}
-              onChange={(e) => onFromCurrencyChange(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              {currencies.map((currency) => (
-                <option key={currency.code} value={currency.code}>
-                  {currency.code} - {currency.name}
-                </option>
-              ))}
-            </select>
+            <Select value={fromCurrency} onValueChange={onFromCurrencyChange}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select currency" />
+              </SelectTrigger>
+              <SelectContent>
+                {currencies.map((currency) => (
+                  <SelectItem
+                    key={currency.code}
+                    value={currency.code}
+                    disabled={currency.code === toCurrency}
+                  >
+                    {currency.code} - {currency.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           {/* Swap Button */}
           <div className="flex justify-center">
@@ -96,18 +107,22 @@ export default function CurrencyConverter({
           {/* To Currency */}
           <div className="space-y-2">
             <Label htmlFor="to-currency">To</Label>
-            <select
-              id="to-currency"
-              value={toCurrency}
-              onChange={(e) => onToCurrencyChange(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              {currencies.map((currency) => (
-                <option key={currency.code} value={currency.code}>
-                  {currency.code} - {currency.name}
-                </option>
-              ))}
-            </select>
+            <Select value={toCurrency} onValueChange={onToCurrencyChange}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select currency" />
+              </SelectTrigger>
+              <SelectContent>
+                {currencies.map((currency) => (
+                  <SelectItem
+                    key={currency.code}
+                    value={currency.code}
+                    disabled={currency.code === fromCurrency}
+                  >
+                    {currency.code} - {currency.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </div>
 

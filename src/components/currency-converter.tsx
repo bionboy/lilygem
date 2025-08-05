@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowLeftRight } from "lucide-react";
+import { ArrowLeftRight, ArrowUpDown } from "lucide-react";
 import { useLatestExchangeRate } from "@/lib/hooks";
 
 const currencies = [
@@ -76,7 +76,7 @@ export default function CurrencyConverter({
         <CardTitle>Convert Currency</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
-        <div className="flex gap-4 items-end justify-between">
+        <div className="flex flex-col gap-4 sm:grid sm:grid-cols-3 sm:items-end">
           {/* From Currency */}
           <div className="space-y-2">
             <Label htmlFor="from-currency">From</Label>
@@ -100,12 +100,13 @@ export default function CurrencyConverter({
           {/* Swap Button */}
           <div className="flex justify-center">
             <Button onClick={swapCurrencies} variant="outline" className="px-4 py-2">
-              <ArrowLeftRight />
+              <ArrowLeftRight className="hidden sm:block" />
+              <ArrowUpDown className="block sm:hidden" />
               Swap
             </Button>
           </div>
           {/* To Currency */}
-          <div className="space-y-2">
+          <div className="-mt-4 sm:mt-0 space-y-2">
             <Label htmlFor="to-currency">To</Label>
             <Select value={toCurrency} onValueChange={onToCurrencyChange}>
               <SelectTrigger className="w-full">

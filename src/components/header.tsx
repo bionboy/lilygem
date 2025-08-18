@@ -4,7 +4,6 @@ import { User, LogOut } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import SignIn from "./sign-in";
-import ThemeToggle from "./theme-toggle";
 import ThemePicker from "./theme-picker";
 
 export default async function Header() {
@@ -35,7 +34,6 @@ export default async function Header() {
         </div>
 
         <div className="flex items-center space-x-4">
-          <ThemeToggle />
           <ThemePicker />
           {session?.user ? (
             <div className="flex items-center space-x-3">

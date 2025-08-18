@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 export default function ThemePicker() {
-  const { setTheme } = useTheme();
+  const { resolvedTheme, setTheme, themes } = useTheme();
 
   return (
     <DropdownMenu>
@@ -25,9 +25,16 @@ export default function ThemePicker() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => setTheme("light")}>Light</DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("dark")}>Dark</DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("system")}>System</DropdownMenuItem>
+        {themes.map((theme) => (
+          <DropdownMenuItem
+            key={theme}
+            onClick={() => setTheme(theme)}
+            aria-selected={resolvedTheme === theme}
+            className={resolvedTheme === theme ? "bg-muted" : ""}
+          >
+            {theme[0].toUpperCase() + theme.slice(1)}
+          </DropdownMenuItem>
+        ))}
       </DropdownMenuContent>
     </DropdownMenu>
   );

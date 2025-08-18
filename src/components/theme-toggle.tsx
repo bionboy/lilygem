@@ -9,9 +9,8 @@ export default function ThemeToggle() {
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
+  // This is needed to prevent hydration errors
   useEffect(() => setMounted(true), []);
-
-  if (!mounted) return null;
 
   const isDark = resolvedTheme === "dark";
 
@@ -22,7 +21,7 @@ export default function ThemeToggle() {
       aria-label="Toggle theme"
       onClick={() => setTheme(isDark ? "light" : "dark")}
     >
-      {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+      {mounted && (isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />)}
     </Button>
   );
 }

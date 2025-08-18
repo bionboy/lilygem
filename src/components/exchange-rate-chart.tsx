@@ -176,8 +176,19 @@ export default function ExchangeRateChart({ fromCurrency, toCurrency }: Exchange
                   tickFormatter={(value) => value.toFixed(3)}
                 />
                 <Tooltip
-                  formatter={(value: number) => [value.toFixed(4), "Rate"]}
-                  labelFormatter={(label) => `Date: ${label}`}
+                  content={({ active, payload, label }) => {
+                    if (active && payload && payload.length) {
+                      return (
+                        <div className="bg-popover border border-border rounded-lg p-3 shadow-lg">
+                          <p className="text-popover-foreground font-medium">Date: {label}</p>
+                          <p className="text-popover-foreground">
+                            Rate: {payload[0].value?.toFixed(4)}
+                          </p>
+                        </div>
+                      );
+                    }
+                    return null;
+                  }}
                 />
                 {liveRate.data && (
                   <ReferenceLine

@@ -157,8 +157,8 @@ export default function CurrencyConverter({
 
         {/* Exchange Rate Display */}
         {exchangeRate && fromCurrency !== toCurrency && (
-          <div className="text-center p-4 bg-gray-50 rounded-lg">
-            <p className="text-sm text-gray-600">
+          <div className="text-center p-4 bg-muted rounded-lg">
+            <p className="text-sm text-muted-foreground">
               Exchange Rate: 1 {fromCurrency} = {exchangeRate.toFixed(4)} {toCurrency}
             </p>
             {isLoading && <p className="text-xs text-blue-600 mt-1">Updating rate...</p>}

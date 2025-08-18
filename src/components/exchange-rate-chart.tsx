@@ -196,10 +196,9 @@ export default function ExchangeRateChart({ fromCurrency, toCurrency }: Exchange
                     x={DateTime.now().toISO()}
                     y={liveRate.data}
                     r={6}
-                    fill="transparent"
                     stroke="orange"
-                    // strokeWidth={2}
-                    // label="Live Rate"
+                    strokeWidth={2}
+                    strokeDasharray="5 5"
                     label={{
                       content: ({ viewBox }) => (
                         <g>
@@ -222,10 +221,14 @@ export default function ExchangeRateChart({ fromCurrency, toCurrency }: Exchange
                 <Line
                   type="monotone"
                   dataKey="rate"
-                  stroke="#3b82f6"
+                  stroke="var(--accent-foreground)"
                   strokeWidth={2}
-                  dot={{ fill: "#3b82f6", strokeWidth: 2, r: 3 }}
-                  activeDot={{ r: 5, stroke: "#3b82f6", strokeWidth: 2 }}
+                  dot={{ fill: "var(--accent-foreground)", strokeWidth: 2, r: 3 }}
+                  activeDot={{
+                    r: 8,
+                    stroke: "var(--accent)",
+                    strokeWidth: 4,
+                  }}
                 />
                 {/* TODO (@bionboy, 25-08-05): Add reference points or maybe another line for user transactions */}
               </LineChart>

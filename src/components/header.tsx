@@ -54,14 +54,14 @@ export default async function Header() {
                     ) : (
                       <User className="w-8 h-8 p-1 bg-muted rounded-full" />
                     )}
-                    <span className="text-sm font-medium">
+                    <span className="text-sm font-medium hidden sm:block">
                       {session.user.name || session.user.email}
                     </span>
                   </div>
                   <form action={handleSignOut}>
                     <Button variant="ghost" size="sm" type="submit">
                       <LogOut className="w-4 h-4 mr-2" />
-                      Sign Out
+                      <span className="hidden sm:block">Sign Out</span>
                     </Button>
                   </form>
                 </div>

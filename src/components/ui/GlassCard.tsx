@@ -12,7 +12,7 @@ function GlassCard({ children, className, hoverEffect = false, ...props }: Glass
       {/* Glass card with liquid effect */}
       <div
         className={cn(
-          "absolute inset-0 bg-gradient-to-br rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-500"
+          "absolute rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-500"
         )}
       ></div>
       <Card
@@ -23,7 +23,7 @@ function GlassCard({ children, className, hoverEffect = false, ...props }: Glass
         )}
         {...props}
       >
-        <div className={cn("absolute inset-0 bg-gradient-to-br rounded-2xl")}></div>
+        <div className={cn("absolute rounded-2xl")}></div>
         <div className="relative z-10">{children}</div>
       </Card>
     </div>

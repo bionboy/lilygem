@@ -134,12 +134,19 @@ export default function ShaderBackground({ className, speed = 0.3 }: ShaderBackg
       if (canvas.width !== width || canvas.height !== height) {
         canvas.width = width;
         canvas.height = height;
+        gl.viewport(0, 0, canvas.width, canvas.height);
+        gl.uniform2f(uResolutionRef.current, canvas.width, canvas.height);
       }
-      gl.viewport(0, 0, canvas.width, canvas.height);
-      gl.uniform2f(uResolutionRef.current, canvas.width, canvas.height);
     };
 
-    const ro = new ResizeObserver(setSize);
+    // Use ResizeObserver with debouncing to prevent FOUC during resize
+    let resizeTimeout: number | null = null;
+    const debouncedResize = () => {
+      if (resizeTimeout) clearTimeout(resizeTimeout);
+      resizeTimeout = window.setTimeout(setSize, 16); // ~60fps
+    };
+
+    const ro = new ResizeObserver(debouncedResize);
     ro.observe(canvas);
     setSize();
 

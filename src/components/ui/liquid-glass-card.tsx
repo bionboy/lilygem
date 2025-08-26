@@ -1,8 +1,8 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
+import { Card } from "./card";
 
-interface LiquidGlassCardProps extends React.ComponentProps<"div"> {
-  children: React.ReactNode;
+interface LiquidGlassCardProps extends React.ComponentProps<typeof Card> {
   gradientColors?: {
     from: string;
     via: string;
@@ -31,7 +31,7 @@ function LiquidGlassCard({
   ...props
 }: LiquidGlassCardProps) {
   return (
-    <div className={cn("relative group", className)} {...props}>
+    <div className="relative group">
       {/* Glass card with liquid effect */}
       <div
         className={cn(
@@ -41,7 +41,13 @@ function LiquidGlassCard({
           gradientColors.to
         )}
       ></div>
-      <div className="relative bg-white/20 dark:bg-gray-900/20 backdrop-blur-xl rounded-2xl border border-white/30 dark:border-white/10 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-1">
+      <Card
+        className={cn(
+          "relative bg-white/20 dark:bg-gray-900/20 backdrop-blur-xl border-white/30 dark:border-white/10 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-1",
+          className
+        )}
+        {...props}
+      >
         <div
           className={cn(
             "absolute inset-0 bg-gradient-to-br rounded-2xl",
@@ -51,7 +57,7 @@ function LiquidGlassCard({
           )}
         ></div>
         <div className="relative z-10">{children}</div>
-      </div>
+      </Card>
     </div>
   );
 }

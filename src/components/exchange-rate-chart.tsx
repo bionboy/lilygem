@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { LiquidGlassCard } from "@/components/ui/liquid-glass-card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -105,9 +106,9 @@ export default function ExchangeRateChart({ fromCurrency, toCurrency }: Exchange
   }, [dateRangeOption, customStartDate, customEndDate]);
 
   return (
-    <Card className="mt-6">
+    <LiquidGlassCard className="mt-6">
       <CardHeader>
-        <CardTitle>{chartTitle}</CardTitle>
+        <CardTitle className="text-white/90">{chartTitle}</CardTitle>
       </CardHeader>
       <CardContent>
         {/* Date Range Selector */}
@@ -119,6 +120,11 @@ export default function ExchangeRateChart({ fromCurrency, toCurrency }: Exchange
                 variant={dateRangeOption === option.value ? "default" : "outline"}
                 size="sm"
                 onClick={() => setDateRangeOption(option.value)}
+                className={
+                  dateRangeOption === option.value
+                    ? "bg-white/20 backdrop-blur-sm border-white/30 text-white hover:bg-white/30"
+                    : "bg-white/10 backdrop-blur-sm border-white/20 text-white/90 hover:bg-white/20 hover:text-white"
+                }
               >
                 {option.label}
               </Button>
@@ -128,17 +134,22 @@ export default function ExchangeRateChart({ fromCurrency, toCurrency }: Exchange
           {dateRangeOption === "custom" && (
             <div className="flex gap-4 items-end">
               <div className="space-y-2">
-                <Label htmlFor="start-date">Start Date</Label>
+                <Label htmlFor="start-date" className="text-white/80">
+                  Start Date
+                </Label>
                 <Input
                   id="start-date"
                   type="date"
                   value={dateToDisplay(customStartDate)}
                   onChange={(e) => setCustomStartDate(DateTime.fromISO(e.target.value))}
                   max={dateToDisplay(customEndDate)}
+                  className="bg-white/10 backdrop-blur-sm border-white/20 text-white/90 focus:bg-white/15"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="end-date">End Date</Label>
+                <Label htmlFor="end-date" className="text-white/80">
+                  End Date
+                </Label>
                 <Input
                   id="end-date"
                   type="date"
@@ -146,6 +157,7 @@ export default function ExchangeRateChart({ fromCurrency, toCurrency }: Exchange
                   onChange={(e) => setCustomEndDate(DateTime.fromISO(e.target.value))}
                   min={dateToDisplay(customStartDate)}
                   max={dateToDisplay(dates.today)}
+                  className="bg-white/10 backdrop-blur-sm border-white/20 text-white/90 focus:bg-white/15"
                 />
               </div>
             </div>
@@ -154,11 +166,11 @@ export default function ExchangeRateChart({ fromCurrency, toCurrency }: Exchange
 
         {rateHistory.isLoading ? (
           <div className="flex justify-center items-center h-64">
-            <p className="text-gray-500">Loading chart data...</p>
+            <p className="text-white/70">Loading chart data...</p>
           </div>
         ) : rateHistory.error ? (
           <div className="flex justify-center items-center h-64">
-            <p className="text-red-500">Error loading chart data</p>
+            <p className="text-red-300">Error loading chart data</p>
           </div>
         ) : chartData.length > 0 ? (
           <div className="h-64">
@@ -179,11 +191,9 @@ export default function ExchangeRateChart({ fromCurrency, toCurrency }: Exchange
                   content={({ active, payload, label }) => {
                     if (active && payload && payload.length) {
                       return (
-                        <div className="bg-popover border border-border rounded-lg p-3 shadow-lg">
-                          <p className="text-popover-foreground font-medium">Date: {label}</p>
-                          <p className="text-popover-foreground">
-                            Rate: {payload[0].value?.toFixed(4)}
-                          </p>
+                        <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg p-3 shadow-lg">
+                          <p className="text-white/90 font-medium">Date: {label}</p>
+                          <p className="text-white/90">Rate: {payload[0].value?.toFixed(4)}</p>
                         </div>
                       );
                     }
@@ -236,10 +246,10 @@ export default function ExchangeRateChart({ fromCurrency, toCurrency }: Exchange
           </div>
         ) : (
           <div className="flex justify-center items-center h-64">
-            <p className="text-gray-500">No chart data available</p>
+            <p className="text-white/70">No chart data available</p>
           </div>
         )}
       </CardContent>
-    </Card>
+    </LiquidGlassCard>
   );
 }

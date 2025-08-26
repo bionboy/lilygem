@@ -18,9 +18,9 @@ export default async function Header() {
     <header className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-6xl px-4">
       <div className="relative group">
         {/* Glass card with liquid effect */}
-        <div className="absolute inset-0 bg-gradient-to-br rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-500"></div>
+        <div className="absolute inset-0 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-500"></div>
         <div className="relative bg-white/20 dark:bg-gray-900/20 backdrop-blur-xl border border-white/30 dark:border-white/10 shadow-xl hover:shadow-2xl transition-all duration-500 rounded-2xl">
-          <div className="absolute inset-0 bg-gradient-to-br rounded-2xl"></div>
+          <div className="absolute inset-0 rounded-2xl"></div>
           <div className="relative z-10 px-6 py-4 flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <h1 className="text-xl font-semibold">

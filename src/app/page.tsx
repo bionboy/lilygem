@@ -8,12 +8,11 @@ export default async function Home() {
   const session = await auth();
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-950 dark:via-gray-900 dark:to-black">
+    <div className="min-h-screen relative overflow-hidden">
+      {/* Shaders */}
+      <ShaderBackground className="opacity-90" speed={0.4} />
       {/* Hero Section */}
       <div className="relative">
-        {/* Shaders */}
-        <ShaderBackground className="opacity-90" speed={0.4} />
-
         <div className="relative z-10 container mx-auto px-4 py-16">
           <div className="text-center max-w-4xl mx-auto">
             {/* Main heading */}

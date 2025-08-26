@@ -181,10 +181,14 @@ export default function ShaderBackground({ className, speed = 0.3 }: ShaderBackg
   }, [speed]);
 
   return (
-    <canvas
-      ref={canvasRef}
-      className={"absolute inset-0 w-full h-full -z-10 opacity-90 " + (className ? className : "")}
-      aria-hidden="true"
-    />
+    <>
+      <canvas
+        ref={canvasRef}
+        className={
+          "absolute inset-0 w-full h-full -z-10 opacity-90 " + (className ? className : "")
+        }
+        aria-hidden="true"
+      />
+    </>
   );
 }

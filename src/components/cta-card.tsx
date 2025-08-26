@@ -12,10 +12,8 @@ interface CTACardProps {
 export function CTACard({ title, description, buttonText, buttonHref }: CTACardProps) {
   return (
     <LiquidGlassCard className="p-6">
-      <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-2 drop-shadow-sm">
-        {title}
-      </h2>
-      <p className="text-gray-700 dark:text-gray-300 mb-6 drop-shadow-sm">{description}</p>
+      <h2 className="text-2xl font-semibold mb-2 drop-shadow-sm">{title}</h2>
+      <p className="text-secondary-foreground mb-6 drop-shadow-sm">{description}</p>
       <Button
         asChild
         size="lg"

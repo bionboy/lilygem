@@ -1,17 +1,13 @@
-import { Button } from "@/components/ui/button";
-import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { LiquidGlassCard } from "@/components/ui/liquid-glass-card";
 import { auth } from "@/lib/auth";
-import ShaderBackground from "@/components/shader-background";
 import { CTACard } from "@/components/cta-card";
 
 export default async function Home() {
   const session = await auth();
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-black/5 dark:bg-background/30">
-      {/* Shaders */}
-      <ShaderBackground speed={0.4} />
+    <div className="min-h-screenn relative overflow-hidden">
       {/* Hero Section */}
       <div className="relative">
         <div className="relative z-10 container mx-auto px-4 py-16">

@@ -59,7 +59,7 @@ export default async function Header() {
                     </span>
                   </div>
                   <form action={handleSignOut}>
-                    <Button variant="outline" size="sm" type="submit">
+                    <Button variant="ghost" size="sm" type="submit">
                       <LogOut className="w-4 h-4 mr-2" />
                       Sign Out
                     </Button>

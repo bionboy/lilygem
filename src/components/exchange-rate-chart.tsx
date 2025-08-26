@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { GlassCard } from "@/components/ui/GlassCard";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -18,6 +19,7 @@ import {
 import { DateTime } from "luxon";
 import { dateToDisplay } from "@/lib/utils/time";
 import { useExchangeRateData, ExchangeRateData, useLatestExchangeRate } from "@/lib/hooks";
+import { cn } from "@/lib/utils";
 
 interface ExchangeRateChartProps {
   fromCurrency: string;
@@ -105,8 +107,8 @@ export default function ExchangeRateChart({ fromCurrency, toCurrency }: Exchange
   }, [dateRangeOption, customStartDate, customEndDate]);
 
   return (
-    <Card className="mt-6">
-      <CardHeader>
+    <GlassCard className="mt-6 backdrop-blur-3xl">
+      <CardHeader className="mb-4">
         <CardTitle>{chartTitle}</CardTitle>
       </CardHeader>
       <CardContent>
@@ -119,6 +121,10 @@ export default function ExchangeRateChart({ fromCurrency, toCurrency }: Exchange
                 variant={dateRangeOption === option.value ? "default" : "outline"}
                 size="sm"
                 onClick={() => setDateRangeOption(option.value)}
+                className={cn(
+                  "bg-white/10 backdrop-blur-sm border-white/30  hover:bg-white/30 hover:text-white",
+                  dateRangeOption === option.value && "bg-white/20 text-accent-foreground"
+                )}
               >
                 {option.label}
               </Button>
@@ -135,6 +141,7 @@ export default function ExchangeRateChart({ fromCurrency, toCurrency }: Exchange
                   value={dateToDisplay(customStartDate)}
                   onChange={(e) => setCustomStartDate(DateTime.fromISO(e.target.value))}
                   max={dateToDisplay(customEndDate)}
+                  className="bg-white/10 backdrop-blur-sm border-white/20 focus:bg-white/15"
                 />
               </div>
               <div className="space-y-2">
@@ -146,6 +153,7 @@ export default function ExchangeRateChart({ fromCurrency, toCurrency }: Exchange
                   onChange={(e) => setCustomEndDate(DateTime.fromISO(e.target.value))}
                   min={dateToDisplay(customStartDate)}
                   max={dateToDisplay(dates.today)}
+                  className="bg-white/10 backdrop-blur-sm border-white/20 focus:bg-white/15"
                 />
               </div>
             </div>
@@ -154,36 +162,40 @@ export default function ExchangeRateChart({ fromCurrency, toCurrency }: Exchange
 
         {rateHistory.isLoading ? (
           <div className="flex justify-center items-center h-64">
-            <p className="text-gray-500">Loading chart data...</p>
+            <p>Loading chart data...</p>
           </div>
         ) : rateHistory.error ? (
           <div className="flex justify-center items-center h-64">
-            <p className="text-red-500">Error loading chart data</p>
+            <p className="text-destructive">Error loading chart data</p>
           </div>
         ) : chartData.length > 0 ? (
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke="var(--secondary-foreground)"
+                  strokeOpacity={0.4}
+                />
                 <XAxis
                   dataKey="date"
                   tick={{ fontSize: 12 }}
                   tickFormatter={(value) => DateTime.fromISO(value).toFormat("MM/dd")}
+                  stroke="var(--secondary-foreground)"
                 />
                 <YAxis
                   domain={["dataMin - 0.01", "dataMax + 0.01"]}
                   tick={{ fontSize: 12 }}
                   tickFormatter={(value) => value.toFixed(3)}
+                  stroke="var(--secondary-foreground)"
                 />
                 <Tooltip
                   content={({ active, payload, label }) => {
                     if (active && payload && payload.length) {
                       return (
-                        <div className="bg-popover border border-border rounded-lg p-3 shadow-lg">
-                          <p className="text-popover-foreground font-medium">Date: {label}</p>
-                          <p className="text-popover-foreground">
-                            Rate: {payload[0].value?.toFixed(4)}
-                          </p>
+                        <div className=" font-medium bg-background/50 backdrop-blur-sm border border-white/20 rounded-lg p-3 shadow-lg">
+                          <p>Date: {label}</p>
+                          <p>Rate: {payload[0].value?.toFixed(4)}</p>
                         </div>
                       );
                     }
@@ -196,7 +208,7 @@ export default function ExchangeRateChart({ fromCurrency, toCurrency }: Exchange
                     x={DateTime.now().toISO()}
                     y={liveRate.data}
                     r={6}
-                    stroke="orange"
+                    stroke="var(--chart-1)"
                     strokeWidth={2}
                     strokeDasharray="5 5"
                     label={{
@@ -207,7 +219,7 @@ export default function ExchangeRateChart({ fromCurrency, toCurrency }: Exchange
                             x={viewBox.x + 10}
                             // @ts-expect-error: viewBox may not have x/y, but we assume Cartesian here
                             y={viewBox.y - 10}
-                            fill="orange"
+                            fill="var(--secondary-foreground)"
                             fontWeight="bold"
                           >
                             Live Rate
@@ -221,12 +233,12 @@ export default function ExchangeRateChart({ fromCurrency, toCurrency }: Exchange
                 <Line
                   type="monotone"
                   dataKey="rate"
-                  stroke="var(--accent-foreground)"
+                  stroke="var(--chart-4)"
                   strokeWidth={2}
-                  dot={{ fill: "var(--accent-foreground)", strokeWidth: 2, r: 3 }}
+                  dot={{ fill: "var(--chart-5)", strokeWidth: 2, r: 3 }}
                   activeDot={{
                     r: 8,
-                    stroke: "var(--accent)",
+                    stroke: "var(--chart-1)",
                     strokeWidth: 4,
                   }}
                 />
@@ -236,10 +248,10 @@ export default function ExchangeRateChart({ fromCurrency, toCurrency }: Exchange
           </div>
         ) : (
           <div className="flex justify-center items-center h-64">
-            <p className="text-gray-500">No chart data available</p>
+            <p>No chart data available</p>
           </div>
         )}
       </CardContent>
-    </Card>
+    </GlassCard>
   );
 }

@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { GlassCard } from "@/components/ui/GlassCard";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -71,8 +72,8 @@ export default function CurrencyConverter({
   }, [fromCurrency, toCurrency, onFromCurrencyChange, onToCurrencyChange]);
 
   return (
-    <Card>
-      <CardHeader>
+    <GlassCard className="backdrop-blur-3xl">
+      <CardHeader className="mb-4">
         <CardTitle>Convert Currency</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -81,7 +82,7 @@ export default function CurrencyConverter({
           <div className="space-y-2">
             <Label htmlFor="from-currency">From</Label>
             <Select value={fromCurrency} onValueChange={onFromCurrencyChange}>
-              <SelectTrigger className="w-full">
+              <SelectTrigger className="w-full backdrop-blur-sm border-white/20 hover:bg-white/15">
                 <SelectValue placeholder="Select currency" />
               </SelectTrigger>
               <SelectContent>
@@ -99,7 +100,11 @@ export default function CurrencyConverter({
           </div>
           {/* Swap Button */}
           <div className="flex justify-center">
-            <Button onClick={swapCurrencies} variant="outline" className="px-4 py-2">
+            <Button
+              onClick={swapCurrencies}
+              variant="outline"
+              className="px-4 py-2 bg-white/10 backdrop-blur-sm border-white/20 hover:bg-white/20 transition-all duration-300"
+            >
               <ArrowLeftRight className="hidden sm:block" />
               <ArrowUpDown className="block sm:hidden" />
               Swap
@@ -109,7 +114,7 @@ export default function CurrencyConverter({
           <div className="-mt-4 sm:mt-0 space-y-2">
             <Label htmlFor="to-currency">To</Label>
             <Select value={toCurrency} onValueChange={onToCurrencyChange}>
-              <SelectTrigger className="w-full">
+              <SelectTrigger className="w-full backdrop-blur-sm border-white/20 hover:bg-white/15">
                 <SelectValue placeholder="Select currency" />
               </SelectTrigger>
               <SelectContent>
@@ -137,7 +142,7 @@ export default function CurrencyConverter({
               placeholder="0.00"
               value={fromAmount}
               onChange={(e) => setFromAmount(e.target.value)}
-              className="text-lg"
+              className="text-lg placeholder:text-primary/50 backdrop-blur-sm border-white/20  focus:bg-white/15"
             />
           </div>
 
@@ -150,22 +155,22 @@ export default function CurrencyConverter({
               placeholder="0.00"
               value={toAmount}
               onChange={(e) => handleToAmountChange(e.target.value)}
-              className="text-lg"
+              className="text-lg placeholder:text-primary/50 backdrop-blur-sm border-white/20  focus:bg-white/15"
             />
           </div>
         </div>
 
         {/* Exchange Rate Display */}
         {exchangeRate && fromCurrency !== toCurrency && (
-          <div className="text-center p-4 bg-muted rounded-lg">
-            <p className="text-sm text-muted-foreground">
+          <div className="text-center p-4 backdrop-blur-sm border border-white/10 rounded-lg">
+            <p className="text-sm ">
               Exchange Rate: 1 {fromCurrency} = {exchangeRate.toFixed(4)} {toCurrency}
             </p>
-            {isLoading && <p className="text-xs text-blue-600 mt-1">Updating rate...</p>}
-            {error && <p className="text-xs text-red-600 mt-1">Error loading rate</p>}
+            {isLoading && <p className="text-xs text-blue-300 mt-1">Updating rate...</p>}
+            {error && <p className="text-xs text-red-300 mt-1">Error loading rate</p>}
           </div>
         )}
       </CardContent>
-    </Card>
+    </GlassCard>
   );
 }

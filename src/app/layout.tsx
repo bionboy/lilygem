@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/header";
 import Providers from "./providers";
+import ShaderBackground from "@/components/shader-background";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,8 +29,9 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <Providers>
+          <ShaderBackground speed={0.4} />
           <Header />
-          <main>{children}</main>
+          <main className="pt-24">{children}</main>
         </Providers>
       </body>
     </html>

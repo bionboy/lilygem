@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { LiquidGlassCard } from "@/components/ui/liquid-glass-card";
+import { GlassCard } from "@/components/ui/GlassCard";
 import Link from "next/link";
 
 interface CTACardProps {
@@ -11,7 +11,7 @@ interface CTACardProps {
 
 export function CTACard({ title, description, buttonText, buttonHref }: CTACardProps) {
   return (
-    <LiquidGlassCard className="p-6">
+    <GlassCard className="p-6">
       <h2 className="text-2xl font-semibold mb-2 drop-shadow-sm">{title}</h2>
       <p className="text-secondary-foreground mb-6 drop-shadow-sm">{description}</p>
       <Button
@@ -21,6 +21,6 @@ export function CTACard({ title, description, buttonText, buttonHref }: CTACardP
       >
         <Link href={buttonHref}>{buttonText}</Link>
       </Button>
-    </LiquidGlassCard>
+    </GlassCard>
   );
 }

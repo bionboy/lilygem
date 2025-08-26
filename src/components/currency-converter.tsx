@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { LiquidGlassCard } from "@/components/ui/liquid-glass-card";
+import { GlassCard } from "@/components/ui/GlassCard";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -72,19 +72,17 @@ export default function CurrencyConverter({
   }, [fromCurrency, toCurrency, onFromCurrencyChange, onToCurrencyChange]);
 
   return (
-    <LiquidGlassCard>
-      <CardHeader>
-        <CardTitle className="text-white/90">Convert Currency</CardTitle>
+    <GlassCard className="backdrop-blur-3xl">
+      <CardHeader className="mb-4">
+        <CardTitle>Convert Currency</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="flex flex-col gap-4 sm:grid sm:grid-cols-3 sm:items-end">
           {/* From Currency */}
           <div className="space-y-2">
-            <Label htmlFor="from-currency" className="text-white/80">
-              From
-            </Label>
+            <Label htmlFor="from-currency">From</Label>
             <Select value={fromCurrency} onValueChange={onFromCurrencyChange}>
-              <SelectTrigger className="w-full bg-white/10 backdrop-blur-sm border-white/20 text-white/90 hover:bg-white/15">
+              <SelectTrigger className="w-full backdrop-blur-sm border-white/20 hover:bg-white/15">
                 <SelectValue placeholder="Select currency" />
               </SelectTrigger>
               <SelectContent>
@@ -105,7 +103,7 @@ export default function CurrencyConverter({
             <Button
               onClick={swapCurrencies}
               variant="outline"
-              className="px-4 py-2 bg-white/10 backdrop-blur-sm border-white/20 hover:bg-white/20 text-white/90 hover:text-white transition-all duration-300"
+              className="px-4 py-2 bg-white/10 backdrop-blur-sm border-white/20 hover:bg-white/20 transition-all duration-300"
             >
               <ArrowLeftRight className="hidden sm:block" />
               <ArrowUpDown className="block sm:hidden" />
@@ -114,11 +112,9 @@ export default function CurrencyConverter({
           </div>
           {/* To Currency */}
           <div className="-mt-4 sm:mt-0 space-y-2">
-            <Label htmlFor="to-currency" className="text-white/80">
-              To
-            </Label>
+            <Label htmlFor="to-currency">To</Label>
             <Select value={toCurrency} onValueChange={onToCurrencyChange}>
-              <SelectTrigger className="w-full bg-white/10 backdrop-blur-sm border-white/20 text-white/90 hover:bg-white/15">
+              <SelectTrigger className="w-full backdrop-blur-sm border-white/20 hover:bg-white/15">
                 <SelectValue placeholder="Select currency" />
               </SelectTrigger>
               <SelectContent>
@@ -139,39 +135,35 @@ export default function CurrencyConverter({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* From Amount */}
           <div className="space-y-2">
-            <Label htmlFor="from-amount" className="text-white/80">
-              Amount
-            </Label>
+            <Label htmlFor="from-amount">Amount</Label>
             <Input
               id="from-amount"
               type="number"
               placeholder="0.00"
               value={fromAmount}
               onChange={(e) => setFromAmount(e.target.value)}
-              className="text-lg bg-white/10 backdrop-blur-sm border-white/20 text-white/90 placeholder:text-white/50 focus:bg-white/15"
+              className="text-lg placeholder:text-primary/50 backdrop-blur-sm border-white/20  focus:bg-white/15"
             />
           </div>
 
           {/* To Amount */}
           <div className="space-y-2">
-            <Label htmlFor="to-amount" className="text-white/80">
-              Converted Amount
-            </Label>
+            <Label htmlFor="to-amount">Converted Amount</Label>
             <Input
               id="to-amount"
               type="number"
               placeholder="0.00"
               value={toAmount}
               onChange={(e) => handleToAmountChange(e.target.value)}
-              className="text-lg bg-white/10 backdrop-blur-sm border-white/20 text-white/90 placeholder:text-white/50 focus:bg-white/15"
+              className="text-lg placeholder:text-primary/50 backdrop-blur-sm border-white/20  focus:bg-white/15"
             />
           </div>
         </div>
 
         {/* Exchange Rate Display */}
         {exchangeRate && fromCurrency !== toCurrency && (
-          <div className="text-center p-4 bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg">
-            <p className="text-sm text-white/70">
+          <div className="text-center p-4 backdrop-blur-sm border border-white/10 rounded-lg">
+            <p className="text-sm ">
               Exchange Rate: 1 {fromCurrency} = {exchangeRate.toFixed(4)} {toCurrency}
             </p>
             {isLoading && <p className="text-xs text-blue-300 mt-1">Updating rate...</p>}
@@ -179,6 +171,6 @@ export default function CurrencyConverter({
           </div>
         )}
       </CardContent>
-    </LiquidGlassCard>
+    </GlassCard>
   );
 }

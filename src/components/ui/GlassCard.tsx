@@ -2,9 +2,11 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 import { Card } from "./card";
 
-interface LiquidGlassCardProps extends React.ComponentProps<typeof Card> {}
+interface GlassCardProps extends React.ComponentProps<typeof Card> {
+  hoverEffect?: boolean;
+}
 
-function LiquidGlassCard({ children, className, ...props }: LiquidGlassCardProps) {
+function GlassCard({ children, className, hoverEffect = false, ...props }: GlassCardProps) {
   return (
     <div className="relative group">
       {/* Glass card with liquid effect */}
@@ -15,7 +17,8 @@ function LiquidGlassCard({ children, className, ...props }: LiquidGlassCardProps
       ></div>
       <Card
         className={cn(
-          "relative bg-white/20 dark:bg-gray-900/20 backdrop-blur-xl border-white/30 dark:border-white/10 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-1",
+          "relative bg-white/20 dark:bg-gray-900/20 backdrop-blur-xl border-white/30 dark:border-white/10 shadow-xl",
+          hoverEffect && "hover:shadow-2xl hover:-translate-y-1 transition-all duration-500",
           className
         )}
         {...props}
@@ -27,4 +30,4 @@ function LiquidGlassCard({ children, className, ...props }: LiquidGlassCardProps
   );
 }
 
-export { LiquidGlassCard };
+export { GlassCard };

@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { LiquidGlassCard } from "@/components/ui/liquid-glass-card";
+import { GlassCard } from "@/components/ui/GlassCard";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -19,6 +19,7 @@ import {
 import { DateTime } from "luxon";
 import { dateToDisplay } from "@/lib/utils/time";
 import { useExchangeRateData, ExchangeRateData, useLatestExchangeRate } from "@/lib/hooks";
+import { cn } from "@/lib/utils";
 
 interface ExchangeRateChartProps {
   fromCurrency: string;
@@ -106,9 +107,9 @@ export default function ExchangeRateChart({ fromCurrency, toCurrency }: Exchange
   }, [dateRangeOption, customStartDate, customEndDate]);
 
   return (
-    <LiquidGlassCard className="mt-6">
-      <CardHeader>
-        <CardTitle className="text-white/90">{chartTitle}</CardTitle>
+    <GlassCard className="mt-6 backdrop-blur-3xl">
+      <CardHeader className="mb-4">
+        <CardTitle>{chartTitle}</CardTitle>
       </CardHeader>
       <CardContent>
         {/* Date Range Selector */}
@@ -120,11 +121,10 @@ export default function ExchangeRateChart({ fromCurrency, toCurrency }: Exchange
                 variant={dateRangeOption === option.value ? "default" : "outline"}
                 size="sm"
                 onClick={() => setDateRangeOption(option.value)}
-                className={
-                  dateRangeOption === option.value
-                    ? "bg-white/20 backdrop-blur-sm border-white/30 text-white hover:bg-white/30"
-                    : "bg-white/10 backdrop-blur-sm border-white/20 text-white/90 hover:bg-white/20 hover:text-white"
-                }
+                className={cn(
+                  "bg-white/10 backdrop-blur-sm border-white/30  hover:bg-white/30 hover:text-white",
+                  dateRangeOption === option.value && "bg-white/20 text-accent-foreground"
+                )}
               >
                 {option.label}
               </Button>
@@ -134,22 +134,18 @@ export default function ExchangeRateChart({ fromCurrency, toCurrency }: Exchange
           {dateRangeOption === "custom" && (
             <div className="flex gap-4 items-end">
               <div className="space-y-2">
-                <Label htmlFor="start-date" className="text-white/80">
-                  Start Date
-                </Label>
+                <Label htmlFor="start-date">Start Date</Label>
                 <Input
                   id="start-date"
                   type="date"
                   value={dateToDisplay(customStartDate)}
                   onChange={(e) => setCustomStartDate(DateTime.fromISO(e.target.value))}
                   max={dateToDisplay(customEndDate)}
-                  className="bg-white/10 backdrop-blur-sm border-white/20 text-white/90 focus:bg-white/15"
+                  className="bg-white/10 backdrop-blur-sm border-white/20 focus:bg-white/15"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="end-date" className="text-white/80">
-                  End Date
-                </Label>
+                <Label htmlFor="end-date">End Date</Label>
                 <Input
                   id="end-date"
                   type="date"
@@ -157,7 +153,7 @@ export default function ExchangeRateChart({ fromCurrency, toCurrency }: Exchange
                   onChange={(e) => setCustomEndDate(DateTime.fromISO(e.target.value))}
                   min={dateToDisplay(customStartDate)}
                   max={dateToDisplay(dates.today)}
-                  className="bg-white/10 backdrop-blur-sm border-white/20 text-white/90 focus:bg-white/15"
+                  className="bg-white/10 backdrop-blur-sm border-white/20 focus:bg-white/15"
                 />
               </div>
             </div>
@@ -166,34 +162,40 @@ export default function ExchangeRateChart({ fromCurrency, toCurrency }: Exchange
 
         {rateHistory.isLoading ? (
           <div className="flex justify-center items-center h-64">
-            <p className="text-white/70">Loading chart data...</p>
+            <p>Loading chart data...</p>
           </div>
         ) : rateHistory.error ? (
           <div className="flex justify-center items-center h-64">
-            <p className="text-red-300">Error loading chart data</p>
+            <p className="text-destructive">Error loading chart data</p>
           </div>
         ) : chartData.length > 0 ? (
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke="var(--secondary-foreground)"
+                  strokeOpacity={0.4}
+                />
                 <XAxis
                   dataKey="date"
                   tick={{ fontSize: 12 }}
                   tickFormatter={(value) => DateTime.fromISO(value).toFormat("MM/dd")}
+                  stroke="var(--secondary-foreground)"
                 />
                 <YAxis
                   domain={["dataMin - 0.01", "dataMax + 0.01"]}
                   tick={{ fontSize: 12 }}
                   tickFormatter={(value) => value.toFixed(3)}
+                  stroke="var(--secondary-foreground)"
                 />
                 <Tooltip
                   content={({ active, payload, label }) => {
                     if (active && payload && payload.length) {
                       return (
-                        <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg p-3 shadow-lg">
-                          <p className="text-white/90 font-medium">Date: {label}</p>
-                          <p className="text-white/90">Rate: {payload[0].value?.toFixed(4)}</p>
+                        <div className=" font-medium bg-background/50 backdrop-blur-sm border border-white/20 rounded-lg p-3 shadow-lg">
+                          <p>Date: {label}</p>
+                          <p>Rate: {payload[0].value?.toFixed(4)}</p>
                         </div>
                       );
                     }
@@ -206,7 +208,7 @@ export default function ExchangeRateChart({ fromCurrency, toCurrency }: Exchange
                     x={DateTime.now().toISO()}
                     y={liveRate.data}
                     r={6}
-                    stroke="orange"
+                    stroke="var(--chart-1)"
                     strokeWidth={2}
                     strokeDasharray="5 5"
                     label={{
@@ -217,7 +219,7 @@ export default function ExchangeRateChart({ fromCurrency, toCurrency }: Exchange
                             x={viewBox.x + 10}
                             // @ts-expect-error: viewBox may not have x/y, but we assume Cartesian here
                             y={viewBox.y - 10}
-                            fill="orange"
+                            fill="var(--secondary-foreground)"
                             fontWeight="bold"
                           >
                             Live Rate
@@ -231,12 +233,12 @@ export default function ExchangeRateChart({ fromCurrency, toCurrency }: Exchange
                 <Line
                   type="monotone"
                   dataKey="rate"
-                  stroke="var(--accent-foreground)"
+                  stroke="var(--chart-4)"
                   strokeWidth={2}
-                  dot={{ fill: "var(--accent-foreground)", strokeWidth: 2, r: 3 }}
+                  dot={{ fill: "var(--chart-5)", strokeWidth: 2, r: 3 }}
                   activeDot={{
                     r: 8,
-                    stroke: "var(--accent)",
+                    stroke: "var(--chart-1)",
                     strokeWidth: 4,
                   }}
                 />
@@ -246,10 +248,10 @@ export default function ExchangeRateChart({ fromCurrency, toCurrency }: Exchange
           </div>
         ) : (
           <div className="flex justify-center items-center h-64">
-            <p className="text-white/70">No chart data available</p>
+            <p>No chart data available</p>
           </div>
         )}
       </CardContent>
-    </LiquidGlassCard>
+    </GlassCard>
   );
 }

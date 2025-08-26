@@ -1,5 +1,5 @@
 import { CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { LiquidGlassCard } from "@/components/ui/liquid-glass-card";
+import { GlassCard } from "@/components/ui/GlassCard";
 import { auth } from "@/lib/auth";
 import { CTACard } from "@/components/cta-card";
 
@@ -47,7 +47,7 @@ export default async function Home() {
       {/* Features Section */}
       <div className="container mx-auto px-4 py-16">
         <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          <LiquidGlassCard className="p-6">
+          <GlassCard className="p-6" hoverEffect={true}>
             <CardHeader className="p-0">
               <div className="w-12 h-12 bg-blue-100/50 dark:bg-blue-900/20 rounded-xl flex items-center justify-center mb-4 backdrop-blur-sm border border-blue-200/30 dark:border-blue-800/30">
                 <span className="text-2xl">💰</span>
@@ -57,9 +57,9 @@ export default async function Home() {
                 Keep track of your daily expenses with ease
               </CardDescription>
             </CardHeader>
-          </LiquidGlassCard>
+          </GlassCard>
 
-          <LiquidGlassCard className="p-6">
+          <GlassCard className="p-6" hoverEffect={true}>
             <CardHeader className="p-0">
               <div className="w-12 h-12 bg-purple-100/50 dark:bg-purple-900/20 rounded-xl flex items-center justify-center mb-4 backdrop-blur-sm border border-purple-200/30 dark:border-purple-800/30">
                 <span className="text-2xl">🌍</span>
@@ -69,9 +69,9 @@ export default async function Home() {
                 Real-time exchange rates and currency conversion tools
               </CardDescription>
             </CardHeader>
-          </LiquidGlassCard>
+          </GlassCard>
 
-          <LiquidGlassCard className="p-6">
+          <GlassCard className="p-6" hoverEffect={true}>
             <CardHeader className="p-0">
               <div className="w-12 h-12 bg-green-100/50 dark:bg-green-900/20 rounded-xl flex items-center justify-center mb-4 backdrop-blur-sm border border-green-200/30 dark:border-green-800/30">
                 <span className="text-2xl">📊</span>
@@ -81,7 +81,7 @@ export default async function Home() {
                 Visual insights into your spending patterns
               </CardDescription>
             </CardHeader>
-          </LiquidGlassCard>
+          </GlassCard>
         </div>
       </div>
     </div>

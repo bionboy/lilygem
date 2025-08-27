@@ -1,47 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { GlassCard } from "@/components/ui/GlassCard";
-
-interface Transaction {
-  id: number;
-  date: string;
-  base_currency: string;
-  target_currency: string;
-  base_amount: number;
-  target_amount: number;
-  exchange_rate: number;
-  description?: string;
-  created_at: string;
-}
+import { useTransactions } from "@/lib/hooks";
 
 export default function TransactionList() {
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    fetchTransactions();
-  }, []);
-
-  const fetchTransactions = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch("/api/transactions");
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      setTransactions(data.transactions || []);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to fetch transactions");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { data: transactions = [], isLoading, error } = useTransactions();
 
   const formatCurrency = (amount: number, currency: string) => {
     return new Intl.NumberFormat("en-US", {
@@ -59,7 +23,7 @@ export default function TransactionList() {
     });
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <GlassCard hoverEffect>
         <CardHeader>
@@ -82,7 +46,7 @@ export default function TransactionList() {
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-center p-8">
-            <div className="text-destructive">Error: {error}</div>
+            <div className="text-destructive">Error: {error?.message || "An error occurred"}</div>
           </div>
         </CardContent>
       </GlassCard>

@@ -14,7 +14,6 @@ CREATE TABLE user_transactions (
   base_amount DECIMAL(15,2) NOT NULL,
   target_amount DECIMAL(15,2) NOT NULL,
   exchange_rate DECIMAL(15,6) NOT NULL,
-  transaction_type VARCHAR(20) NOT NULL CHECK (transaction_type IN ('buy', 'sell', 'transfer')),
   description TEXT,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()

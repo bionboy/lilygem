@@ -1,4 +1,3 @@
-// src/lib/hooks/use-transactions.ts
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface TransactionFilters {
@@ -53,7 +52,7 @@ export function useCreateTransaction() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (transaction: any): Promise<Transaction> => {
+    mutationFn: async (transaction): Promise<Transaction> => {
       const response = await fetch("/api/transactions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

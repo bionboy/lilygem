@@ -67,20 +67,12 @@ export async function POST(request: NextRequest) {
       baseAmount,
       targetAmount,
       exchangeRate,
-      transactionType,
       description,
     } = body;
 
     // Validate required fields
-    if (
-      !date ||
-      !baseCurrency ||
-      !targetCurrency ||
-      !baseAmount ||
-      !targetAmount ||
-      !exchangeRate ||
-      !transactionType
-    ) {
+    const required = [date, baseCurrency, targetCurrency, baseAmount, targetAmount, exchangeRate];
+    if (required.some((v) => !v)) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
@@ -94,7 +86,6 @@ export async function POST(request: NextRequest) {
         base_amount: baseAmount,
         target_amount: targetAmount,
         exchange_rate: exchangeRate,
-        transaction_type: transactionType,
         description,
       })
       .select()

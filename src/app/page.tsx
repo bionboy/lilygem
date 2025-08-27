@@ -49,7 +49,7 @@ export default async function Home() {
         <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
           <GlassCard className="p-6" hoverEffect={true}>
             <CardHeader className="p-0">
-              <div className="w-12 h-12 bg-blue-100/50 dark:bg-blue-900/20 rounded-xl flex items-center justify-center mb-4 backdrop-blur-sm border border-blue-200/30 dark:border-blue-800/30">
+              <div className="w-12 h-12 bg-blue-100/50 dark:bg-blue-900/20 rounded-xl flex items-center justify-center backdrop-blur-sm border border-blue-200/30 dark:border-blue-800/30">
                 <span className="text-2xl">💰</span>
               </div>
               <CardTitle className="text-xl drop-shadow-sm">Expense Tracking</CardTitle>
@@ -61,7 +61,7 @@ export default async function Home() {
 
           <GlassCard className="p-6" hoverEffect={true}>
             <CardHeader className="p-0">
-              <div className="w-12 h-12 bg-purple-100/50 dark:bg-purple-900/20 rounded-xl flex items-center justify-center mb-4 backdrop-blur-sm border border-purple-200/30 dark:border-purple-800/30">
+              <div className="w-12 h-12 bg-purple-100/50 dark:bg-purple-900/20 rounded-xl flex items-center justify-center backdrop-blur-sm border border-purple-200/30 dark:border-purple-800/30">
                 <span className="text-2xl">🌍</span>
               </div>
               <CardTitle className="text-xl drop-shadow-sm">Currency Conversion</CardTitle>
@@ -73,7 +73,7 @@ export default async function Home() {
 
           <GlassCard className="p-6" hoverEffect={true}>
             <CardHeader className="p-0">
-              <div className="w-12 h-12 bg-green-100/50 dark:bg-green-900/20 rounded-xl flex items-center justify-center mb-4 backdrop-blur-sm border border-green-200/30 dark:border-green-800/30">
+              <div className="w-12 h-12 bg-green-100/50 dark:bg-green-900/20 rounded-xl flex items-center justify-center backdrop-blur-sm border border-green-200/30 dark:border-green-800/30">
                 <span className="text-2xl">📊</span>
               </div>
               <CardTitle className="text-xl drop-shadow-sm">Analytics</CardTitle>

@@ -108,7 +108,7 @@ export default function ExchangeRateChart({ fromCurrency, toCurrency }: Exchange
 
   return (
     <GlassCard className="mt-6 backdrop-blur-3xl">
-      <CardHeader className="mb-4">
+      <CardHeader>
         <CardTitle>{chartTitle}</CardTitle>
       </CardHeader>
       <CardContent>

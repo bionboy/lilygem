@@ -3,6 +3,7 @@
 import { useState } from "react";
 import CurrencyConverter from "@/components/currency-converter";
 import ExchangeRateChart from "@/components/exchange-rate-chart";
+import TransactionList from "@/components/TransactionTest";
 
 export default function DashboardPage() {
   const [fromCurrency, setFromCurrency] = useState("USD");
@@ -10,7 +11,7 @@ export default function DashboardPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="max-w-2xl mx-auto">
+      <div className="max-w-4xl mx-auto space-y-8">
         <CurrencyConverter
           fromCurrency={fromCurrency}
           toCurrency={toCurrency}
@@ -18,6 +19,7 @@ export default function DashboardPage() {
           onToCurrencyChange={setToCurrency}
         />
         <ExchangeRateChart fromCurrency={fromCurrency} toCurrency={toCurrency} />
+        <TransactionList />
       </div>
     </div>
   );

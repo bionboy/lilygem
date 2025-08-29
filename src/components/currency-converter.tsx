@@ -73,7 +73,7 @@ export default function CurrencyConverter({
 
   return (
     <GlassCard className="backdrop-blur-3xl">
-      <CardHeader className="mb-4">
+      <CardHeader>
         <CardTitle>Convert Currency</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">

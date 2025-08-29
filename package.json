@@ -11,6 +11,7 @@
     "cron": "source .env.local && curl -X GET \"http://localhost:3000/api/cron/exchange-rates\" -H \"Authorization: Bearer $CRON_SECRET\""
   },
   "dependencies": {
+    "@auth/supabase-adapter": "^1.10.0",
     "@radix-ui/react-dropdown-menu": "^2.1.16",
     "@radix-ui/react-label": "^2.1.7",
     "@radix-ui/react-select": "^2.2.5",

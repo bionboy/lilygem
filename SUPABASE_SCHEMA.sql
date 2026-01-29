@@ -34,7 +34,15 @@ CREATE INDEX idx_exchange_rate_pairs_date_pair ON exchange_rate_pairs(date, base
 CREATE INDEX idx_user_transactions_user_date ON user_transactions(user_id, date);
 CREATE INDEX idx_user_transactions_currencies ON user_transactions(base_currency, target_currency);
 
--- Row Level Security (RLS) policies
+-- Row Level Security (RLS) policies for exchange_rate_pairs
+-- This is read-only reference data; writes only via service_role (bypasses RLS)
+ALTER TABLE exchange_rate_pairs ENABLE ROW LEVEL SECURITY;
+
+-- Authenticated users can read all exchange rates (shared reference data)
+CREATE POLICY "Authenticated users can read exchange rates" ON exchange_rate_pairs
+  FOR SELECT TO authenticated USING (true);
+
+-- Row Level Security (RLS) policies for user_transactions
 ALTER TABLE user_transactions ENABLE ROW LEVEL SECURITY;
 
 -- Users can only see their own transactions

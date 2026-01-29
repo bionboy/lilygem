@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "shadcn": "pnpm dlx shadcn@latest add",
+    "shadcn": "npx shadcn@latest add",
     "cron": "source .env.local && curl -X GET \"http://localhost:3000/api/cron/exchange-rates\" -H \"Authorization: Bearer $CRON_SECRET\""
   },
   "dependencies": {

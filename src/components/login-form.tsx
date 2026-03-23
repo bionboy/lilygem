@@ -12,7 +12,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Card>
+      <Card className="bg-background/50 backdrop-blur-sm border-white/20">
         <CardHeader className="text-center">
           <CardTitle className="text-xl">Howdy!</CardTitle>
           <CardDescription>Login with your Google account</CardDescription>

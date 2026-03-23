@@ -195,7 +195,7 @@ export default function ExchangeRateChart({ fromCurrency, toCurrency }: Exchange
                       return (
                         <div className=" font-medium bg-background/50 backdrop-blur-sm border border-white/20 rounded-lg p-3 shadow-lg">
                           <p>Date: {label}</p>
-                          <p>Rate: {payload[0].value?.toFixed(4)}</p>
+                          <p>Rate: {Number(payload[0].value)?.toFixed(4)}</p>
                         </div>
                       );
                     }
